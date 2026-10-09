@@ -45,6 +45,8 @@ internal static class Analysis
                 var before = ValueAt(n, a.T);
                 var during = e.Where(x => x.Kind == "v" && x.Name == n && x.T > a.T && x.T < end).ToList();
                 if (during.Count == 0) continue;
+                // Numerical noise (e.g. GROUND VELOCITY around 1e-7 kt at a standstill) is not a reaction.
+                if (during.Max(x => Math.Abs(x.Value - before)) < 1e-3) continue;
                 changed++;
                 var first = during[0];
                 L($"      {n,-42} {before:G6} → {during[^1].Value:G6}   (range {during.Min(x => x.Value):G6} to {during.Max(x => x.Value):G6}, first change after {(first.T - a.T) * 1000:F0} ms, {during.Count} change(s))");
