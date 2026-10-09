@@ -83,6 +83,40 @@ internal static class Analysis
         L("--- LVars of the loaded aircraft (MF.LVars.List) ---");
         L($"  {lvars.Count} LVars" + (lvars.Count > 0 ? ". First ones: " + string.Join(", ", lvars.Take(15)) : ""));
         L("  The full list is saved next to this report (-lvars.txt).");
+
+        // ------------------------------------------------------------------ native SimConnect
+        L();
+        L("--- Native SimConnect (MSFS 2024), without the module ---");
+        var mfWrite = First(x => x.Kind == "cmd" && x.Text == "MF.SimVars.Set.1 (>L:FS24PF_TEST)");
+        if (mfWrite is not null)
+        {
+            var seen = First(x => x.Kind == "native" && x.Name == "L:FS24PF_TEST" && x.T > mfWrite.T && x.Value == 1);
+            L("  L:FS24PF_TEST written through the module: " + (seen is null ? "NOT seen by native SimConnect" : $"seen natively after {(seen.T - mfWrite.T) * 1000:F0} ms"));
+        }
+        foreach (var c in e.Where(x => x.Kind == "cmd" && x.Text.StartsWith("SetDataOnSimObject ")))
+        {
+            var value = c.Text.EndsWith("=1") ? 1.0 : 0.0;
+            var native = First(x => x.Kind == "native" && x.Name == "L:FS24PF_NATIVE" && x.T > c.T && x.Value == value);
+            var viaMf = First(x => x.Kind == "mf" && x.Name == "(L:FS24PF_NATIVE)" && x.T > c.T && x.Value == value);
+            L($"  {c.Text}: " + (native is null ? "NOT read back natively" : $"read back natively after {(native.T - c.T) * 1000:F0} ms")
+              + (viaMf is null ? ", not seen through the module" : $", through the module after {(viaMf.T - c.T) * 1000:F0} ms"));
+        }
+        var count = First(x => x.Kind == "info" && x.Name == "input-events");
+        L($"  Input events of the aircraft (SimConnect_EnumerateInputEvents): {(count is null ? "step not run" : $"{count.Value:F0}")}"
+          + " (full list in -inputevents.txt)");
+        var candidates = First(x => x.Kind == "info" && x.Name == "beacon-candidates");
+        if (candidates is not null) L($"  Beacon input events: {(candidates.Text.Length == 0 ? "none" : candidates.Text)}");
+        foreach (var skip in e.Where(x => x.Kind == "info" && x.Name == "input-event-skip")) L("  " + skip.Text);
+        foreach (var c in e.Where(x => x.Kind == "cmd" && x.Text.StartsWith("SetInputEvent ")))
+        {
+            double? before = e.LastOrDefault(x => x.Kind == "direct" && x.Name == "LIGHT BEACON" && x.T <= c.T)?.Value;
+            var direct = First(x => x.Kind == "direct" && x.Name == "LIGHT BEACON" && x.T > c.T && x.T < c.T + 1.4 && x.Value != before);
+            var name = c.Text["SetInputEvent ".Length..c.Text.IndexOf('=')];
+            var echo = First(x => x.Kind == "ie" && x.Name == name && x.T > c.T && x.T < c.T + 1.4);
+            L($"  {c.Text}: LIGHT BEACON {before} → "
+              + (direct is null ? "NO CHANGE" : $"{direct.Value} after {(direct.T - c.T) * 1000:F0} ms")
+              + (echo is null ? ", no subscription echo" : $", subscription echo {echo.Value} after {(echo.T - c.T) * 1000:F0} ms"));
+        }
         return r.ToString();
     }
 
@@ -129,6 +163,24 @@ internal static class Analysis
                 log.Add(t + 0.002, "mf", Probe.Vars[1], beacon);
             if (log.Entries.LastOrDefault(x => x.Kind == "mf" && x.Name == Probe.Vars[2])?.Value != lvar)
                 log.Add(t + 0.002, "mf", Probe.Vars[2], lvar);
+        }
+        // Native part: the module's LVar seen natively, a native LVar write, two input event toggles.
+        log.Add(14.03, "native", "L:FS24PF_TEST", 1);
+        log.Add(15.53, "native", "L:FS24PF_TEST", 0);
+        foreach (var (t, v) in new[] { (24.0, 1.0), (25.5, 0.0) })
+        {
+            log.Add(t, "cmd", "native", text: $"SetDataOnSimObject L:FS24PF_NATIVE={v}");
+            log.Add(t + 0.026, "native", "L:FS24PF_NATIVE", v);
+            log.Add(t + 0.05, "mf", "(L:FS24PF_NATIVE)", v);
+        }
+        log.Add(27, "info", "input-events", 212);
+        log.Add(27, "info", "beacon-candidates", 1, "LIGHTING_BEACON_1");
+        log.Add(28, "ie", "LIGHTING_BEACON_1", 0);
+        foreach (var (t, v) in new[] { (28.5, 1.0), (30.0, 0.0) })
+        {
+            log.Add(t, "cmd", "native", text: $"SetInputEvent LIGHTING_BEACON_1={v}");
+            log.Add(t + 0.025, "direct", "LIGHT BEACON", v);
+            log.Add(t + 0.03, "ie", "LIGHTING_BEACON_1", v);
         }
         log.Entries.Sort((a, b) => a.T.CompareTo(b.T));
         return (log, ["XMLVAR_Example_1", "A32NX_Example_2", "S_FCU_EXAMPLE"]);

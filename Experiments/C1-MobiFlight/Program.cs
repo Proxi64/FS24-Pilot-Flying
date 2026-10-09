@@ -2,8 +2,9 @@
 // Talks to the MobiFlight WASM module (MIT) as a third-party SimConnect client, to answer:
 //   C1  does the module work under MSFS 2024 with our own registered client (read and write variables, run events)?
 //   C4  how fast do the values sent "on change" by the module arrive, compared with SimConnect itself?
-// It also saves the list of the loaded aircraft's LVars (needed for questions B1 to B4 on the Fenix).
-// The only visible effect in the simulator: the beacon light is toggled 4 times (back to its initial state).
+// It also saves the list of the loaded aircraft's LVars (needed for questions B1 to B4 on the Fenix), and compares
+// with what MSFS 2024 SimConnect does natively, without any module: LVars ("L:" in a data definition) and input events.
+// The only visible effect in the simulator: the beacon light is toggled 4 times, then twice more (back to its initial state).
 // Usage: dotnet run                          run in MSFS (aircraft loaded, any state)
 //        dotnet run -- --analyse <file>      replay the analysis of a saved "...-log.csv" file
 //        dotnet run -- --synthetic           test the report on fake data (no MSFS needed)
@@ -38,9 +39,9 @@ if (args.Length >= 1 && args[0] == "--synthetic")
 }
 else
 {
-    Console.WriteLine("Experiment C1: MobiFlight WASM module. Aircraft loaded (at a parking spot); about 30 s; the beacon light will blink.");
+    Console.WriteLine("Experiment C1: MobiFlight WASM module. Aircraft loaded (at a parking spot); about 40 s; the beacon light will blink.");
     basePath = Path.Combine(folder, $"C1-{stamp}");
-    log = Probe.Run(basePath + "-lvars.txt", out var error);
+    log = Probe.Run(basePath + "-lvars.txt", basePath + "-inputevents.txt", out var error);
     if (log is null)
     {
         Console.WriteLine(error);
@@ -54,5 +55,5 @@ Console.WriteLine(report);
 log.Save(basePath + "-log.csv");
 File.WriteAllText(basePath + "-report.txt", report, new UTF8Encoding(false));
 if (!File.Exists(basePath + "-lvars.txt")) File.WriteAllLines(basePath + "-lvars.txt", lvars);
-Console.WriteLine($"Files written: {basePath}-report.txt, -log.csv, -lvars.txt");
+Console.WriteLine($"Files written: {basePath}-report.txt, -log.csv, -lvars.txt, -inputevents.txt");
 return 0;

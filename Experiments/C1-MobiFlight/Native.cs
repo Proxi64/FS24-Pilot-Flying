@@ -15,6 +15,11 @@ internal static class Native
     public const uint RECV_ID_SIMOBJECT_DATA = 8;
     public const uint RECV_ID_SYSTEM_STATE = 15;
     public const uint RECV_ID_CLIENT_DATA = 16;
+    public const uint RECV_ID_ENUMERATE_INPUT_EVENTS = 34;
+    public const uint RECV_ID_GET_INPUT_EVENT = 35;
+    public const uint RECV_ID_SUBSCRIBE_INPUT_EVENT = 36;
+    public const uint DATA_REQUEST_FLAG_CHANGED = 1;
+    public const uint INPUT_EVENT_TYPE_DOUBLE = 0;
 
     public const uint OBJECT_ID_USER = 0;
     public const uint UNUSED = uint.MaxValue;
@@ -58,6 +63,23 @@ internal static class Native
     public static extern int SimConnect_SetClientData(IntPtr hSimConnect, uint clientDataId, uint defineId, uint flags, uint reserved,
         uint unitSize, byte[] data);
 
+    [DllImport(Dll)]
+    public static extern int SimConnect_SetDataOnSimObject(IntPtr hSimConnect, uint defineId, uint objectId, uint flags,
+        uint arrayCount, uint unitSize, ref double data);
+
+    // Input events (the "B:" variables of MSFS 2024 cockpits).
+    [DllImport(Dll)]
+    public static extern int SimConnect_EnumerateInputEvents(IntPtr hSimConnect, uint requestId);
+
+    [DllImport(Dll)]
+    public static extern int SimConnect_GetInputEvent(IntPtr hSimConnect, uint requestId, ulong hash);
+
+    [DllImport(Dll)]
+    public static extern int SimConnect_SetInputEvent(IntPtr hSimConnect, ulong hash, uint unitSize, ref double value);
+
+    [DllImport(Dll)]
+    public static extern int SimConnect_SubscribeInputEvent(IntPtr hSimConnect, ulong hash);
+
     [DllImport("winmm.dll")]
     public static extern uint timeBeginPeriod(uint period);
 
@@ -83,6 +105,40 @@ internal static class Native
     {
         public Recv Header;
         public uint dwRequestID, dwObjectID, dwDefineID, dwFlags, dwentrynumber, dwoutof, dwDefineCount;
+    }
+
+    /// <summary>SIMCONNECT_RECV_LIST_TEMPLATE header of SIMCONNECT_RECV_ENUMERATE_INPUT_EVENTS (descriptors follow).</summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public struct RecvList
+    {
+        public Recv Header;
+        public uint dwRequestID, dwArraySize, dwEntryNumber, dwOutOf;
+    }
+
+    /// <summary>SIMCONNECT_INPUT_EVENT_DESCRIPTOR: Name char[64], Hash, eType (76 bytes).</summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public unsafe struct InputEventDescriptor
+    {
+        public fixed byte Name[64];
+        public ulong Hash;
+        public uint eType;
+    }
+
+    /// <summary>SIMCONNECT_RECV_GET_INPUT_EVENT (the value follows: double or string).</summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public struct RecvGetInputEvent
+    {
+        public Recv Header;
+        public uint dwRequestID, eType;
+    }
+
+    /// <summary>SIMCONNECT_RECV_SUBSCRIBE_INPUT_EVENT (the value follows: double or string).</summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public struct RecvSubscribeInputEvent
+    {
+        public Recv Header;
+        public ulong Hash;
+        public uint eType;
     }
 
     /// <summary>SIMCONNECT_RECV_SYSTEM_STATE (szString follows: char[MAX_PATH]).</summary>

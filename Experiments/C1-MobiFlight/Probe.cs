@@ -21,17 +21,22 @@ internal static unsafe class Probe
         "(A:LIGHT BEACON,Bool)",         // compared with the same SimVar read directly
         "(L:FS24PF_TEST)",               // our own LVar: write then read back
         "(A:GENERAL ENG RPM:1,rpm)",
+        "(L:FS24PF_NATIVE)",             // LVar written natively by SimConnect, read through the module
     ];
+
+    /// <summary>LVars read natively by SimConnect (MSFS 2024: "L:" names in SimConnect_AddToDataDefinition).</summary>
+    public static readonly string[] NativeLVars = ["L:FS24PF_TEST", "L:FS24PF_NATIVE"];
 
     // Client data areas (our numbering), definitions and requests.
     private const uint AreaDefaultCommand = 0, AreaDefaultResponse = 1, AreaCommand = 2, AreaResponse = 3, AreaVars = 4;
-    private const uint DefString = 1, DefVarsStart = 100, DefDirect = 2;
-    private const uint ReqDefaultResponse = 1, ReqResponse = 2, ReqVarsStart = 100, ReqDirect = 50, ReqAircraft = 60;
+    private const uint DefString = 1, DefVarsStart = 100, DefDirect = 2, DefNativeRead = 3, DefNativeWrite = 4;
+    private const uint ReqDefaultResponse = 1, ReqResponse = 2, ReqVarsStart = 100, ReqDirect = 50, ReqNative = 51,
+        ReqAircraft = 60, ReqEnumerate = 70, ReqGetInputEvent = 71;
 
     /// <summary>SimVars read directly by SimConnect at every frame, to compare with the module.</summary>
     public static readonly (string Name, string Unit)[] Direct = [("LIGHT BEACON", "bool"), ("GENERAL ENG RPM:1", "rpm")];
 
-    public static Log? Run(string lvarsFile, out string error)
+    public static Log? Run(string lvarsFile, string inputEventsFile, out string error)
     {
         error = "";
         IntPtr h;
@@ -51,7 +56,7 @@ internal static unsafe class Probe
         Native.timeBeginPeriod(1);
         try
         {
-            return new Session(h).Execute(lvarsFile);
+            return new Session(h).Execute(lvarsFile, inputEventsFile);
         }
         finally
         {
@@ -66,11 +71,21 @@ internal static unsafe class Probe
         private readonly Stopwatch _clock = Stopwatch.StartNew();
         private readonly List<string> _lvars = [];
         private bool _listing, _quit;
+        private readonly List<(string Name, ulong Hash, uint Type)> _inputEvents = [];
+        private int _enumPages, _enumPagesTotal = -1;
+        private string _gotInputEvent = "";
 
         private double Now => _clock.Elapsed.TotalSeconds;
 
-        public Log Execute(string lvarsFile)
+        public Log Execute(string lvarsFile, string inputEventsFile)
         {
+            // LVars read natively at every change, and the one written natively.
+            foreach (var l in NativeLVars)
+                Native.SimConnect_AddToDataDefinition(h, DefNativeRead, l, "number", Native.DATATYPE_FLOAT64, 0, Native.UNUSED);
+            Native.SimConnect_RequestDataOnSimObject(h, ReqNative, DefNativeRead, Native.OBJECT_ID_USER, Native.PERIOD_SIM_FRAME,
+                Native.DATA_REQUEST_FLAG_CHANGED, 0, 0, 0);
+            Native.SimConnect_AddToDataDefinition(h, DefNativeWrite, NativeLVars[1], "number", Native.DATATYPE_FLOAT64, 0, Native.UNUSED);
+
             // Direct SimVars at every frame, and the loaded aircraft.
             foreach (var (name, unit) in Direct)
                 Native.SimConnect_AddToDataDefinition(h, DefDirect, name, unit, Native.DATATYPE_FLOAT64, 0, Native.UNUSED);
@@ -147,6 +162,46 @@ internal static unsafe class Probe
             _listing = false;
             File.WriteAllLines(lvarsFile, _lvars, new UTF8Encoding(false));
 
+            Step("8. Native SimConnect: write an LVar without the module");
+            foreach (var value in new[] { 1.0, 0.0 })
+            {
+                var v = value;
+                Native.SimConnect_SetDataOnSimObject(h, DefNativeWrite, Native.OBJECT_ID_USER, 0, 0, 8, ref v);
+                _log.Add(Now, "cmd", "native", text: $"SetDataOnSimObject {NativeLVars[1]}={value}");
+                Wait(1.5);
+            }
+
+            Step("9. Native SimConnect: input events (B: variables) of the aircraft");
+            Native.SimConnect_EnumerateInputEvents(h, ReqEnumerate);
+            var until = Now + 5;
+            while (Now < until && (_enumPagesTotal < 0 || _enumPages < _enumPagesTotal) && !_quit) { Pump(); Thread.Sleep(1); }
+            File.WriteAllLines(inputEventsFile, _inputEvents.Select(e => $"{e.Name}\t{e.Hash}\t{(e.Type == Native.INPUT_EVENT_TYPE_DOUBLE ? "double" : "string")}"),
+                new UTF8Encoding(false));
+            _log.Add(Now, "info", "input-events", _inputEvents.Count);
+            var beacon = _inputEvents.Where(e => e.Name.Contains("BEACON", StringComparison.OrdinalIgnoreCase) && e.Type == Native.INPUT_EVENT_TYPE_DOUBLE).ToList();
+            _log.Add(Now, "info", "beacon-candidates", beacon.Count, string.Join(" ", beacon.Select(b => b.Name)));
+            if (beacon.Count > 0)
+            {
+                var (name, hash, _) = beacon[0];
+                _gotInputEvent = name;
+                Native.SimConnect_GetInputEvent(h, ReqGetInputEvent, hash);
+                Native.SimConnect_SubscribeInputEvent(h, hash);
+                Wait(1);
+                var initial = _log.Entries.LastOrDefault(x => x.Kind == "ie" && x.Name == name)?.Value;
+                if (initial is 0 or 1)
+                {
+                    Console.WriteLine($"   toggling {name} twice (the beacon light blinks once more)");
+                    foreach (var value in new[] { 1 - initial.Value, initial.Value })
+                    {
+                        var v = value;
+                        Native.SimConnect_SetInputEvent(h, hash, 8, ref v);
+                        _log.Add(Now, "cmd", "native", text: $"SetInputEvent {name}={value}");
+                        Wait(1.5);
+                    }
+                }
+                else _log.Add(Now, "info", "input-event-skip", text: $"{name} value {initial?.ToString() ?? "not received"}: not toggled");
+            }
+
             Send(AreaCommand, "MF.SimVars.Clear");
             Wait(0.5);
             _log.Add(Now, "mark", "end");
@@ -217,9 +272,31 @@ internal static unsafe class Probe
                         break;
                     case Native.RECV_ID_SIMOBJECT_DATA:
                         var d = (Native.RecvData*)p;
-                        if (d->dwRequestID != ReqDirect) break;
                         var values = (double*)((byte*)p + sizeof(Native.RecvData));
-                        for (var i = 0; i < Direct.Length; i++) _log.Add(Now, "direct", Direct[i].Name, values[i]);
+                        if (d->dwRequestID == ReqDirect)
+                            for (var i = 0; i < Direct.Length; i++) _log.Add(Now, "direct", Direct[i].Name, values[i]);
+                        else if (d->dwRequestID == ReqNative)
+                            for (var i = 0; i < NativeLVars.Length; i++) _log.Add(Now, "native", NativeLVars[i], values[i]);
+                        break;
+                    case Native.RECV_ID_ENUMERATE_INPUT_EVENTS:
+                        var list = (Native.RecvList*)p;
+                        if (list->dwRequestID != ReqEnumerate) break;
+                        var desc = (Native.InputEventDescriptor*)((byte*)p + sizeof(Native.RecvList));
+                        for (var i = 0; i < list->dwArraySize; i++)
+                            _inputEvents.Add((Text(desc[i].Name, 64), desc[i].Hash, desc[i].eType));
+                        _enumPages++;
+                        _enumPagesTotal = (int)list->dwOutOf;
+                        break;
+                    case Native.RECV_ID_GET_INPUT_EVENT:
+                        var g = (Native.RecvGetInputEvent*)p;
+                        if (g->dwRequestID == ReqGetInputEvent && g->eType == Native.INPUT_EVENT_TYPE_DOUBLE)
+                            _log.Add(Now, "ie", _gotInputEvent, *(double*)((byte*)p + sizeof(Native.RecvGetInputEvent)));
+                        break;
+                    case Native.RECV_ID_SUBSCRIBE_INPUT_EVENT:
+                        var sub = (Native.RecvSubscribeInputEvent*)p;
+                        if (sub->eType != Native.INPUT_EVENT_TYPE_DOUBLE) break;
+                        var hashName = _inputEvents.FirstOrDefault(e => e.Hash == sub->Hash).Name ?? sub->Hash.ToString();
+                        _log.Add(Now, "ie", hashName, *(double*)((byte*)p + sizeof(Native.RecvSubscribeInputEvent)));
                         break;
                     case Native.RECV_ID_CLIENT_DATA:
                         var c = (Native.RecvData*)p;
