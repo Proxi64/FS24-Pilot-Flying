@@ -1,0 +1,26 @@
+# Build output (.NET)
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+*.user
+*.suo
+*.userprefs
+.vs/
+.vscode/
+.idea/
+
+# Native SimConnect DLL copied from the MSFS SDK at build time (not ours to redistribute)
+SimConnect.dll
+
+# Experiment results
+results/
+
+# Publish / packaging
+[Pp]ublish/
+*.msix
+AppPackages/
+
+# OS
+Thumbs.db
+Desktop.ini
+.DS_Store

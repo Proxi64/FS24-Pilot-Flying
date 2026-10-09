@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Experiment D2 (FS24 Pilot Flying feasibility study): reads the complete taxi layout of an airport.
+       Throw-away console, outside the future application. Native SimConnect through P/Invoke. -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <SelfContained>false</SelfContained>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <RootNamespace>PilotFlying.Experiments.TaxiLayout</RootNamespace>
+    <!-- SDK installed elsewhere: add -p:MsfsSdk="D:\MSFS 2024 SDK" to dotnet run -->
+    <MsfsSdk Condition="'$(MsfsSdk)' == ''">C:\MSFS 2024 SDK</MsfsSdk>
+    <SimConnectDll>$(MsfsSdk)\SimConnect SDK\lib\SimConnect.dll</SimConnectDll>
+  </PropertyGroup>
+
+  <!-- The native SimConnect.dll comes from each developer's own MSFS 2024 SDK and is copied next to the executable. -->
+  <ItemGroup Condition="Exists('$(SimConnectDll)')">
+    <None Include="$(SimConnectDll)" Link="SimConnect.dll" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+  <Target Name="WarnSimConnectMissing" BeforeTargets="Build" Condition="!Exists('$(SimConnectDll)') And '$(OS)' == 'Windows_NT'">
+    <Warning Text="SimConnect.dll not found ($(SimConnectDll))." />
+  </Target>
+
+</Project>
