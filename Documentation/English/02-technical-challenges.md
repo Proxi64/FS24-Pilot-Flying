@@ -25,8 +25,9 @@ The data is there: the airport layouts provided by the simulator describe taxiwa
 2. **Smooth the turns** at intersections. Curves are already split into short segments (median about 12 m at Pau).
 3. **Follow the path** with a classic mobile-robotics algorithm (*pure pursuit*, *Stanley*). Two aviation specifics:
    - **oversteering on large aircraft**: the main gear, not the nose wheel, must follow the line, otherwise the main wheels cut the corner. The offset depends on the wheelbase, a profile parameter;
-   - **steering control** differs per aircraft: rudder pedals, tiller, differential braking.
-4. **Regulate speed**: target speed depending on curvature, braking before turns. On a jet, idle thrust is often enough to accelerate, hence braking in short applications.
+   - **steering control** differs per aircraft: rudder pedals, tiller, differential braking;
+   - **the aircraft does not roll straight by itself**: with the controls centred, the C172 veered left as soon as it moved, because of the propeller effects (test A1, 09/10/2026: heading −4.5° and 1.6 m off the initial line after 28 m). Following a line therefore means correcting, all the time, the lateral offset and the heading error relative to the taxiway or runway centreline, never holding a fixed control position.
+4. **Regulate speed**: target speed depending on curvature, braking before turns. On a jet, idle thrust is often enough to accelerate, hence braking in short applications. Same on the C172: at idle it already rolls at 5.7 kt (test A1).
 5. **Stop** at hold-short points and behind other aircraft (positions read through SimConnect).
 
 Taxiing is slow: an external loop at 20-30 Hz should be enough (to be measured, question A3 in [06](06-feasibility.md)).

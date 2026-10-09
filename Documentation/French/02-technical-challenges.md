@@ -25,8 +25,9 @@ Les données sont là : les plans d'aérodromes fournis par le simulateur décri
 2. **Adoucir les virages** aux croisements. Les courbes sont déjà découpées en tronçons courts (médiane d'environ 12 m à Pau).
 3. **Suivre la trajectoire** avec un algorithme classique de robotique mobile (*pure pursuit*, *Stanley*). Deux particularités aéronautiques :
    - **le sur-virage des gros porteurs** : il faut faire suivre la ligne au train principal, pas à la roulette de nez, sinon les roues principales coupent le virage. Le décalage dépend de l'empattement, une donnée du profil d'avion ;
-   - **la commande de direction** varie selon l'avion : palonnier, tiller, freins différentiels.
-4. **Réguler la vitesse** : vitesse cible selon la courbure, freinage anticipé avant les virages. Sur un jet, le ralenti suffit souvent à accélérer, d'où un freinage par à-coups.
+   - **la commande de direction** varie selon l'avion : palonnier, tiller, freins différentiels ;
+   - **l'avion ne roule pas droit tout seul** : commandes au neutre, le C172 est parti à gauche dès qu'il a roulé, à cause des effets de l'hélice (essai A1, 09/10/2026 : cap −4,5° et 1,6 m d'écart à la ligne de départ après 28 m). Suivre une ligne, c'est donc corriger en permanence l'écart latéral et l'écart de cap par rapport à l'axe de la voie ou de la piste, jamais tenir une position de commande fixe.
+4. **Réguler la vitesse** : vitesse cible selon la courbure, freinage anticipé avant les virages. Sur un jet, le ralenti suffit souvent à accélérer, d'où un freinage par à-coups. Même chose sur le C172 : au ralenti, il roule déjà à 5,7 kt (essai A1).
 5. **S'arrêter** aux points d'attente et derrière les autres avions (positions lues par SimConnect).
 
 Le roulage est lent : une boucle externe à 20-30 Hz devrait suffire (à mesurer, question A3 de [06](06-feasibility.md)).
