@@ -70,7 +70,9 @@ internal sealed class Follower(Route route)
                 var throttle = Math.Clamp(0.10 + 0.05 * error + 0.02 * _speedIntegral, 0, 0.45);
                 var brake = st.GroundSpeed > target + 0.3 ? Math.Clamp(0.1 + 0.3 * (st.GroundSpeed - target - 0.3), 0, 0.8) : 0;
                 cmd = new Command(rudder, brake > 0 || target < 0.5 ? 0 : throttle, brake, 0);
-                if (toStop <= 0.5) Next("stop", st.T);
+                // Route run 1 (09/10/2026): the aircraft stopped 0.8 m short of the stop point at a near-zero target speed
+                // and the phase never changed; it now also ends when the target is below 0.5 kt and the aircraft stopped.
+                if (toStop <= 0.5 || (target < 0.5 && st.GroundSpeed < 0.3)) Next("stop", st.T);
                 break;
             case "stop":
                 var stopped = st.GroundSpeed < 0.3;
