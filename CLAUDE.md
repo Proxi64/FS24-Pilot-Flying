@@ -83,4 +83,5 @@ Read first, in this order:
 - MSFS 2024 SimConnect reads/writes LVars natively ("L:NAME" in `SimConnect_AddToDataDefinition`, FLOAT64) and drives
   cockpit input events (B: vars: `SimConnect_EnumerateInputEvents` / `SetInputEvent` / `SubscribeInputEvent`;
   RECV ids 34–37). On the 2024 C172, `K:TOGGLE_BEACON_LIGHTS` worked once in four, the input event every time (test C1).
-  The MobiFlight module lists at most 1000 LVars.
+  The MobiFlight module lists at most 1000 LVars (on Hugues's PC, GSX and another add-on fill them: no Fenix LVar).
+  The Fenix A320 exposes 220 input events (audio panels, FCU knobs turn/push/pull, radio, standby), no AP buttons.
