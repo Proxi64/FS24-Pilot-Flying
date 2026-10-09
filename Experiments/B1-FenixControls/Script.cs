@@ -64,6 +64,7 @@ internal static class Script
         "S_FCU_AP1", "S_FCU_ATHR", "S_FCU_LOC", "S_FCU_APPR", "S_FCU_SPEED",
         "E_FCU_SPEED", "E_FCU_HEADING", "E_FCU_ALTITUDE",
         "S_MIP_AUTOBRAKE_LO", "S_MIP_AUTOBRAKE_MED", "S_FC_FLAPS", "S_OH_EXT_LT_BEACON", "N_FC_CAPT_TILLER",
+        "A_FC_THROTTLE_LEFT_INPUT", "A_FC_THROTTLE_RIGHT_INPUT",
     ];
 
     public static readonly string[] KeyEvents =
@@ -71,11 +72,17 @@ internal static class Script
 
     public const string SpeedKnobInputEvent = "FNX320_INPUT_KNOB_PUSHPULL_E_FCU_SPEED_KNOB";
 
-    /// <summary>Sent when the run ends or is stopped: axes centred, thrust levers at idle, tiller centred.</summary>
+    /// <summary>
+    /// Sent when the run ends or is stopped: axes and tiller centred, Fenix thrust levers back to their initial position.
+    /// THROTTLE_SET 0 is NOT idle on the Fenix (test B1, 09/10/2026: it left the levers at about 50 %), so the
+    /// levers are put back through their LVars.
+    /// </summary>
     public static void SafeState(ICockpit c)
     {
-        foreach (var e in new[] { "AXIS_ELEVATOR_SET", "AXIS_AILERONS_SET", "AXIS_RUDDER_SET", "THROTTLE_SET", "AXIS_STEERING_SET" })
+        foreach (var e in new[] { "AXIS_ELEVATOR_SET", "AXIS_AILERONS_SET", "AXIS_RUDDER_SET", "AXIS_STEERING_SET" })
             c.Key(e, 0);
+        if (!double.IsNaN(_thrustLeft0)) c.SetL("A_FC_THROTTLE_LEFT_INPUT", _thrustLeft0);
+        if (!double.IsNaN(_thrustRight0)) c.SetL("A_FC_THROTTLE_RIGHT_INPUT", _thrustRight0);
     }
 
     // ------------------------------------------------------------------ primitives
@@ -120,7 +127,7 @@ internal static class Script
 
     // ------------------------------------------------------------------ the actions
 
-    private static double _flaps0, _beacon0, _tiller0;
+    private static double _flaps0, _beacon0, _tiller0, _thrustLeft0 = double.NaN, _thrustRight0 = double.NaN;
 
     public static readonly Act[] Actions =
     [
@@ -130,6 +137,8 @@ internal static class Script
             _flaps0 = c.Get("L:S_FC_FLAPS");
             _beacon0 = c.Get("L:S_OH_EXT_LT_BEACON");
             _tiller0 = c.Get("L:N_FC_CAPT_TILLER");
+            _thrustLeft0 = c.Get("L:A_FC_THROTTLE_LEFT_INPUT");
+            _thrustRight0 = c.Get("L:A_FC_THROTTLE_RIGHT_INPUT");
         }),
         new("ap1-click", "B3", "AP1 button on the FCU", c => Click(c, "S_FCU_AP1")),
         new("ap1-click-again", "B3", "AP1 button (back)", c => Click(c, "S_FCU_AP1")),
@@ -179,6 +188,10 @@ internal static class Script
             c.Key("THROTTLE_SET", (int)Math.Round(0.3 * 16383));
             c.Wait(2);
             c.Key("THROTTLE_SET", 0);
+            c.Wait(2);
+            // THROTTLE_SET 0 is not idle on the Fenix: put the levers back through their LVars.
+            if (!double.IsNaN(_thrustLeft0)) c.SetL("A_FC_THROTTLE_LEFT_INPUT", _thrustLeft0);
+            if (!double.IsNaN(_thrustRight0)) c.SetL("A_FC_THROTTLE_RIGHT_INPUT", _thrustRight0);
         }),
         new("axis-steering", "B2", "tiller, through AXIS_STEERING_SET", c => Sweep(c, "AXIS_STEERING_SET", 0.5)),
         new("tiller-lvar", "B2", "tiller, through its LVar N_FC_CAPT_TILLER", c =>

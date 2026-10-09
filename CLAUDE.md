@@ -85,3 +85,7 @@ Read first, in this order:
   RECV ids 34–37). On the 2024 C172, `K:TOGGLE_BEACON_LIGHTS` worked once in four, the input event every time (test C1).
   The MobiFlight module lists at most 1000 LVars (on Hugues's PC, GSX and another add-on fill them: no Fenix LVar).
   The Fenix A320 exposes 220 input events (audio panels, FCU knobs turn/push/pull, radio, standby), no AP buttons.
+- Fenix A320 (test B1): cockpit = plain LVars, written natively. Push buttons are counters (+1 press, +1 release),
+  knobs are encoders `E_FCU_*` (+1/−1 per detent), FCU windows `N_FCU_*`, lights `I_*`. `THROTTLE_SET 0` is NOT idle
+  on the Fenix (levers end at ~50 %): use `A_FC_THROTTLE_LEFT/RIGHT_INPUT` (2 = idle). Tiller: `N_FC_CAPT_TILLER`
+  (±75) or `AXIS_STEERING_SET`. Many buttons do nothing on the ground with engines off: normal aircraft behaviour.
