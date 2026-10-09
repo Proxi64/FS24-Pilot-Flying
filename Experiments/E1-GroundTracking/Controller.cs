@@ -24,9 +24,45 @@ internal sealed record Line(double AE, double AN, double Bearing, double StartAl
             ? new Line(s.AE, s.AN, s.Bearing, 0, 0, s.Name, s.Path)
             : new Line(s.BE, s.BN, (s.Bearing + 180) % 360, 0, 0, s.Name, s.Path);
         var start = line.Along(e, n);
-        var stop = Math.Min(start + Tracker.MaxDistance, s.Length - Tracker.EndClearance);
-        if (stop - start < 40) { refused = $"only {Math.Max(0, stop - start):F0} m of straight line ahead on {s.Name} (path {s.Path}, {s.Length:F0} m): need 40 m or more"; return null; }
+        // The layout cuts a straight taxiway into several segments: chain the next ones while they stay on the line.
+        var (straight, pieces) = StraightAhead(layout, s, forward, line);
+        var stop = Math.Min(start + Tracker.MaxDistance, straight - Tracker.EndClearance);
+        if (stop - start < 40) { refused = $"only {Math.Max(0, stop - start):F0} m of straight line ahead on {s.Name} (path {s.Path}, {pieces} segment(s), {straight:F0} m): need 40 m or more"; return null; }
         return line with { StartAlong = start, StopAlong = stop };
+    }
+
+    /// <summary>
+    /// Length of straight line from the start of the line, following the connected aircraft segments whose far end
+    /// stays within 0.5 m of the line (and which go on in the same direction).
+    /// </summary>
+    private static (double Length, int Pieces) StraightAhead(Layout layout, Segment first, bool forward, Line line)
+    {
+        var node = forward ? first.EndNode : first.StartNode;
+        var length = first.Length;
+        var pieces = 1;
+        var used = new HashSet<int> { first.Path };
+        while (true)
+        {
+            Segment? next = null;
+            double nextLength = 0;
+            foreach (var s in layout.Segments)
+            {
+                if (used.Contains(s.Path) || s.Type is 3) continue;
+                double fe, fn;
+                if (s.StartNode == node) (fe, fn) = (s.BE, s.BN);
+                else if (s.EndNode == node) (fe, fn) = (s.AE, s.AN);
+                else continue;
+                var along = line.Along(fe, fn);
+                if (along <= length + 1 || Math.Abs(line.CrossTrack(fe, fn)) > 0.5) continue;
+                next = s;
+                nextLength = along;
+            }
+            if (next is null) return (length, pieces);
+            used.Add(next.Path);
+            node = next.StartNode == node ? next.EndNode : next.StartNode;
+            length = nextLength;
+            pieces++;
+        }
     }
 }
 

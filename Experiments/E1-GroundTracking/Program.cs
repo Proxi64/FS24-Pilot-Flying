@@ -9,6 +9,7 @@
 // Usage: dotnet run -- [ICAO]                          run in MSFS (layout: results\layout-ICAO.json)
 //        dotnet run -- --analyse <frames.csv>          replay the analysis of a saved "...-frames.csv" file
 //        dotnet run -- --synthetic                     run the law on a simple C172 model (no MSFS needed)
+//        dotnet run -- --line ICAO path along heading  which straight line would be followed from that point
 
 using System.Globalization;
 using System.Text;
@@ -27,6 +28,17 @@ if (args.Length >= 2 && args[0] == "--analyse")
 {
     (frames, notes) = Analysis.Load(args[1]);
     Console.WriteLine(Analysis.Report(frames, notes, Path.GetFileName(args[1])));
+    return 0;
+}
+if (args.Length >= 5 && args[0] == "--line")
+{
+    // Which straight line would be followed from this position: --line ICAO path along heading (no MSFS needed).
+    var l = Layout.Load(Path.Combine(folder, $"layout-{args[1].ToUpperInvariant()}.json"));
+    var seg = l.Segments.First(s => s.Path == int.Parse(args[2]));
+    var d = double.Parse(args[3]);
+    double ue = (seg.BE - seg.AE) / seg.Length, un = (seg.BN - seg.AN) / seg.Length;
+    var found = Line.From(l, seg.AE + ue * d, seg.AN + un * d, double.Parse(args[4]), out var why);
+    Console.WriteLine(found is null ? "Refused: " + why : $"{found.Name} (path {found.Path}), bearing {found.Bearing:F1}°, {found.StopAlong - found.StartAlong:F0} m of automatic taxi");
     return 0;
 }
 if (args.Length >= 1 && args[0] == "--synthetic")

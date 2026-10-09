@@ -3,7 +3,7 @@ using System.Text.Json;
 namespace PilotFlying.Experiments.GroundTracking;
 
 /// <summary>A straight piece of the aircraft taxi network, in metres east / north of the airport reference point.</summary>
-internal sealed record Segment(int Path, int Type, string Name, double AE, double AN, double BE, double BN)
+internal sealed record Segment(int Path, int Type, string Name, double AE, double AN, double BE, double BN, int StartNode = -1, int EndNode = -1)
 {
     public double Length => Math.Sqrt((BE - AE) * (BE - AE) + (BN - AN) * (BN - AN));
     /// <summary>Direction A → B, degrees true.</summary>
@@ -53,7 +53,10 @@ internal sealed class Layout
             if (!(type == 3 ? parkings : points).TryGetValue(endIndex, out var b)) continue;
             var nameIndex = p.GetProperty("NameIndex").GetInt32();
             var name = type == 2 ? "(runway)" : type == 3 ? "(parking)" : names.TryGetValue(nameIndex, out var n) && n.Length > 0 ? n : "(unnamed)";
-            layout.Segments.Add(new Segment(p.GetProperty("Index").GetInt32(), type, name, a.E, a.N, b.E, b.N));
+            // Nodes: taxi point index; a parking spot (END of a PARKING path) gets a negative node number.
+            var startNode = p.GetProperty("Start").GetInt32();
+            layout.Segments.Add(new Segment(p.GetProperty("Index").GetInt32(), type, name, a.E, a.N, b.E, b.N,
+                startNode, type == 3 ? -1 - endIndex : endIndex));
         }
         return layout;
     }
