@@ -75,7 +75,7 @@ We are looking for people comfortable with at least one of these:
 
 Everything in the repository is in English (code, identifiers, file and folder names); the documentation also exists in full in French.
 
-Open an issue to introduce yourself, ask a question or share an idea. The way we organise ourselves will be decided with the first contributors.
+[Open an issue](https://github.com/Proxi64/FS24-Pilot-Flying/issues) to introduce yourself, ask a question or share an idea. The way we organise ourselves will be decided with the first contributors.
 
 ## Repository layout
 
@@ -169,7 +169,7 @@ Nous cherchons des personnes à l'aise avec au moins un de ces sujets :
 
 Tout le dépôt est en anglais (code, identifiants, noms de fichiers et de dossiers) ; la documentation existe aussi intégralement en français.
 
-Ouvrez une *issue* pour vous présenter, poser une question ou proposer une idée. Notre organisation sera décidée avec les premiers contributeurs.
+[Ouvrez une *issue*](https://github.com/Proxi64/FS24-Pilot-Flying/issues) pour vous présenter, poser une question ou proposer une idée. Notre organisation sera décidée avec les premiers contributeurs.
 
 ### Organisation du dépôt
 

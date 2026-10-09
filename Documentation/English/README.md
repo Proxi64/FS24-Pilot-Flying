@@ -46,9 +46,9 @@ The project is looking for contributors comfortable with at least one of these t
 - **WinUI 3 / .NET** for the application;
 - **flight testing** on a variety of aircraft and airports.
 
-The project is released under the MIT licence (see `LICENSE` at the root of the repository). Open questions (hosting, organisation) are listed in the [decision log](decision-log.md) and will be settled with the first contributors.
+The project is released under the MIT licence (see `LICENSE` at the root of the repository). Open questions (organisation) are listed in the [decision log](decision-log.md) and will be settled with the first contributors.
 
-Contact: open an issue on the GitHub repository.
+Contact: open an issue on the GitHub repository: https://github.com/Proxi64/FS24-Pilot-Flying/issues
 
 ## Folder layout
 

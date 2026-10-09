@@ -15,6 +15,7 @@
 | 09/10/2026 | **Licence MIT** pour le projet | Simple et attirante pour les contributeurs ; un passage ultérieur vers une licence plus protectrice (GPL) reste possible, l'inverse serait très difficile. Conséquence : pas de reprise de code GPL ou LGPL, seulement des idées |
 | 09/10/2026 | Nom du projet : **FS24 Pilot Flying** (anciennement « Virtual Pilot ») | « Pilot Flying » = le pilote aux commandes, ce que fait le logiciel ; « FS24 » situe le simulateur. Nom à revoir si le projet suit une version suivante de MSFS |
 | 09/10/2026 | **Tout le projet en anglais** : code, identifiants, textes, noms de dossiers et de fichiers. Seule exception : la documentation existe aussi en français complet, dans `Documentation/French/`, avec les mêmes noms de fichiers que `Documentation/English/` | Projet ouvert à une communauté internationale |
+| 09/10/2026 | Hébergement sur **GitHub** : https://github.com/Proxi64/FS24-Pilot-Flying | Plateforme habituelle de la communauté MSFS |
 | 09/10/2026 | Wassette écarté | Sans rapport avec les modules WASM de MSFS |
 
 ## Propositions en attente de validation
@@ -27,6 +28,5 @@
 
 - **Licence des profils d'avion et des données** (par exemple CC BY 4.0), distincte de celle du code.
 - Accord de contribution (CLA) ou simple engagement à publier sous MIT ?
-- Hébergement (GitHub ?) et organisation (tickets, revue de code).
-- Langue de travail du code (noms, commentaires) : français, anglais ?
+- Organisation (tickets, revue de code).
 - Gratuit, ou modèle permettant de financer le travail ?
