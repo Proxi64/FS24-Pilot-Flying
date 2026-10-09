@@ -20,7 +20,10 @@ internal sealed class Route
     /// at three times their length; runways, vehicle roads and other names are not. The route ends at the first hold-short
     /// point that touches the last name of the clearance (the taxiway leading onto the runway), which is never entered.
     /// </summary>
-    public static Route? Find(Layout layout, int parking, string[] clearance, out string refused)
+    /// <param name="heading">Aircraft heading on the stand: only the exits ahead of it are used (a stand can have one
+    /// exit behind the aircraft, for a pushback, and one ahead; test E1 route, LFBP stands 8A to 8C, 09/10/2026).
+    /// NaN: any exit.</param>
+    public static Route? Find(Layout layout, int parking, string[] clearance, double heading, out string refused)
     {
         refused = "";
         var last = clearance[^1];
@@ -40,8 +43,15 @@ internal sealed class Route
         var dist = new Dictionary<(int, int), double>();
         var previous = new Dictionary<(int, int), ((int, int) From, Segment Seg)?>();
         var queue = new PriorityQueue<(int Node, int K), double>();
+        var pk0 = layout.Parkings[parking];
         var exits = layout.Segments.Where(s => s.Type == 3 && s.EndNode == -1 - parking).ToList();
         if (exits.Count == 0) { refused = $"parking {parking} has no PARKING path to the taxi network"; return null; }
+        if (!double.IsNaN(heading))
+        {
+            // A PARKING path goes from its START node to the stand (END): the exit direction is stand → START node.
+            exits = exits.Where(x => Math.Abs(((Math.Atan2(x.AE - pk0.E, x.AN - pk0.N) * 180 / Math.PI - heading) % 360 + 540) % 360 - 180) < 90).ToList();
+            if (exits.Count == 0) { refused = $"parking {parking} has no exit ahead of the aircraft (heading {heading:F0}°): a pushback would be needed"; return null; }
+        }
         foreach (var exit in exits)
         {
             dist[(exit.StartNode, 0)] = 0;

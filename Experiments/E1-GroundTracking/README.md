@@ -48,10 +48,12 @@ dotnet run --project Experiments/E1-GroundTracking -- LFBP --route C,NG,NW,N5
 Simulation (no MSFS): `dotnet run --project Experiments/E1-GroundTracking -- --route-synthetic LFBP 0 C,NG,NW,N5`.
 Results: `E1-route-LFBP-<date>-report.txt`, `-frames.csv`, `-notes.txt`, `-track.geojson` (route in blue, track in red).
 
-At LFBP, from stand 8A (GATE_A 8): unnamed apron lane 151 m → C 106 m → NG 111 m → NW 874 m → hold-short point 30
-(entrance of N5 towards runway 31). The data gives stands 8A/8B/8C a heading of about 35°, the route leaving at
-about 215°. Simulated with the aircraft facing the route: offset ≤ 0.13 m on straight parts, ≤ 0.42 m in turns,
-stop 4.5 m before the hold-short point.
+Only the stand exits **ahead of the aircraft** are used: stands 8A/8B/8C at LFBP have two PARKING paths, one 2.5 to
+15 m behind the aircraft (for a pushback) and one about 17 m ahead; the first version took the shorter one, behind,
+and refused the start. From stand 8A (GATE_A 8, heading 35°, confirmed by Hugues): 17 m ahead, then a 180° right
+turn in three steps along the apron, C 106 m, NG 111 m, NW 874 m, hold-short point 30 (entrance of N5 towards runway
+31), 1,290 m in all; this matches the path Hugues drew. Simulated: offset ≤ 0.13 m on straight parts, ≤ 0.41 m in
+turns, stop 4.5 m before the hold-short point.
 
 ## The law (straight-line mode)
 

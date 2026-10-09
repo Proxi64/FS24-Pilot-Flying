@@ -30,7 +30,7 @@ internal static unsafe class RouteMode
         var d = Math.Sqrt((pk.E - e) * (pk.E - e) + (pk.N - n) * (pk.N - n));
         notes.Add($"Nearest parking spot: index {parking}, {d:F1} m from the aircraft, heading {pk.Heading:F0}°");
         if (d > MaxParkingDistance) { refused = $"the aircraft is {d:F0} m from the nearest parking spot (index {parking}): start from a parking spot"; return null; }
-        var route = Route.Find(layout, parking, clearance, out refused);
+        var route = Route.Find(layout, parking, clearance, heading, out refused);
         if (route is null) return null;
         notes.Add($"Route ({route.Length:F0} m): {route.Summary}");
         var angle = Math.Abs(((route.BearingAt(Follower.MinLookahead) - heading) % 360 + 540) % 360 - 180);
@@ -197,7 +197,7 @@ internal static unsafe class RouteMode
         var pk = layout.Parkings[parking];
         var heading = pk.Heading;
         var route = Prepare(layout, pk.E, pk.N, heading, clearance, notes, out var refused);
-        if (route is null && Route.Find(layout, parking, clearance, out _) is { } r)
+        if (route is null && Route.Find(layout, parking, clearance, double.NaN, out _) is { } r)
         {
             // The stand heading would need a pushback: simulate the law with the aircraft already facing the route.
             heading = r.BearingAt(Follower.MinLookahead);

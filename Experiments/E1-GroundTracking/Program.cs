@@ -56,7 +56,7 @@ if (args.Length >= 4 && args[0] == "--route-synthetic" || args.Length >= 3 && ar
     {
         (routeFrames, notes) = RouteMode.Load(args[2]);
         var pk = layout.Parkings.MinBy(p => Math.Pow(p.Value.E - routeFrames[0].State.E, 2) + Math.Pow(p.Value.N - routeFrames[0].State.N, 2)).Key;
-        route = Route.Find(layout, pk, clearance, out _);
+        route = Route.Find(layout, pk, clearance, routeFrames[0].State.Heading, out _);
         Console.WriteLine(RouteMode.Report(routeFrames, notes, route, Path.GetFileName(args[2])));
         return 0;
     }
