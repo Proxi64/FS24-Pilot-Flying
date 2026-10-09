@@ -71,6 +71,11 @@ Read first, in this order:
   8 PAINTEDLINE. `TAXI_POINT.TYPE`: 2 HOLD_SHORT, 4 ILS_HOLD_SHORT, 5/6 same without markings.
 - `SimConnect_FlightPlanLoad` has no effect in MSFS 2024. A hand-written flight plan inside a `.FLT` file crashed MSFS.
 - `PLANE TOUCHDOWN *` SimVars give the exact touchdown even when read at 1 Hz.
+- Axis events (test A1, C172): a positive `AXIS_ELEVATOR/AILERONS/RUDDER_SET` value gives a negative `*_POSITION`
+  (nose down, roll left, yaw left). `AXIS_*_BRAKE_SET` is non-linear (-16383 → 5 %, 0 → 31 %, +16383 → 100 %).
+  A moved joystick overrides the program between two sends; the last value sent stays until something else sends.
+  Nose wheel (C172): turns only while rolling; rudder and `AXIS_STEERING_SET` both steer it, 20° per full command,
+  positive = left (tiller: opposite of the docs). Read it with `GEAR CENTER STEER ANGLE`, not `CONTACT POINT STEER ANGLE:0`.
 - Camera states 2–8, 24, 26, 29 = user at the controls; 34–35 = menus / loading.
 - SimConnect weather functions are deprecated in MSFS 2024.
 - Third-party aircraft (Fenix, PMDG…) need LVars / H-events: planned access through the MobiFlight WASM module

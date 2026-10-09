@@ -10,10 +10,10 @@ Status: ✅ confirmed · 🟡 partly · ❓ to be checked · ❌ impossible or d
 
 | # | Question | How to check | Status |
 |---|---|---|---|
-| A1 | Can we continuously send (20 to 50 Hz) elevator, ailerons, rudder, throttle and brakes through SimConnect (`AXIS_*_SET`, `THROTTLE_SET`, `AXIS_LEFT/RIGHT_BRAKE_SET`)? | Test on C172, then Asobo A320 | ❓ |
-| A2 | What happens with the user's joystick and throttle plugged in? How to take and hand back control cleanly? | Test with hardware plugged in | ❓ |
-| A3 | What read and write rate do we actually reach, with how much jitter? | Measured during test A1 | ❓ |
-| A4 | On the ground, does the rudder steer the nose wheel? Is there a separate tiller? | Test at the gate | ❓ |
+| A1 | Can we continuously send (20 to 50 Hz) elevator, ailerons, rudder, throttle and brakes through SimConnect (`AXIS_*_SET`, `THROTTLE_SET`, `AXIS_LEFT/RIGHT_BRAKE_SET`)? | Test on C172, then Asobo A320 | 🟡 Yes on the C172 at a standstill (test A1, 09/10/2026): elevator, ailerons, rudder, throttle and brakes follow events sent at 30 and 60 Hz. A positive `AXIS_ELEVATOR/AILERONS/RUDDER_SET` value gives a negative `*_POSITION` (nose down, roll left, yaw left). Brakes: non-linear scale, -16383 → 5 %, -8191 → 13 %, 0 → 31 %, +8191 → 55 %, +16383 → 100 %. Remain: in flight, Asobo A320 |
+| A2 | What happens with the user's joystick and throttle plugged in? How to take and hand back control cleanly? | Test with hardware plugged in | 🟡 Test A1 (09/10/2026), T.16000M joystick: untouched, it never interferes; moved, it overrides the program between two sends (program value only 37 % of the time); when the program stops sending, the last value stays until the joystick moves, and then the joystick takes over at once. So a user input can be detected as a gap between command and position. Remains: throttle lever, clean handover design |
+| A3 | What read and write rate do we actually reach, with how much jitter? | Measured during test A1 | ✅ Test A1 (09/10/2026), C172 at a standstill: reading at every simulation frame = 41 Hz on this PC (interval 25 ms, p95 26.4 ms, one 81 ms gap in 20 s); sending 30 and 60 Hz held (p95 34.7 / 17.9 ms); throttle and brakes respond at the next frame (≤ 10 ms), control surfaces with about 20 ms of delay (sine wave) and settle in about 0.1 s. The reading rate follows the simulator frame rate |
+| A4 | On the ground, does the rudder steer the nose wheel? Is there a separate tiller? | Test at the gate | ✅ C172 (test A1, 09/10/2026): the nose wheel only turns while rolling (at a standstill its angle stays at 0). Rolling at 3 to 5 kt, the rudder **and** the tiller event `AXIS_STEERING_SET` both steer it, linearly, 20° per full command, no measurable delay; the aircraft yaws about 0.22 s later. A positive value turns left for both (for the tiller, the opposite of the documentation). Angle read with `GEAR CENTER STEER ANGLE` or `GEAR STEER ANGLE:0`; `CONTACT POINT STEER ANGLE:0` stays at 0. Airliners: see B2 |
 
 ## B. Fenix A320
 
@@ -61,6 +61,7 @@ Status: ✅ confirmed · 🟡 partly · ❓ to be checked · ❌ impossible or d
 | Test | Folder | Questions | State |
 |---|---|---|---|
 | D2 — complete taxi layout | `Experiments/D2-TaxiLayout/` | D1, D2, D3, axis convention, network connectivity | Run in MSFS at LFBP, France VFR payware scenery from the Community folder (9 October 2026). Confirmed: element types 2 START and 17 TAXI_NAME, BIAS_X = east / BIAS_Z = north (median 0.4 m against 297 m), network connected to all parking spots and hold-short points. Run again at LFPG, default Asobo scenery (9 October 2026): same conclusions (axes: median 1.3 m against 544 m; 4,313-node main network, 374 parking spots all connected). `WIDTH`, `CENTER_LINE` and `WEIGHT` are transmitted (LFPG: widths 5 to 60 m, painted centreline on 3,252 paths, weight 500,000 lb) but depend on the scenery: LFBP gives 30 m, 0 and 0 everywhere. They cannot be relied on without a fallback |
+| A1 — controlling the aircraft from outside | `Experiments/A1-AxisControl/` | A1, A2, A3, A4 (Cessna 172 at a parking spot, engine off) | Run in MSFS on 9 October 2026 (Asobo C172 at a parking spot, engine off): no SimConnect exception; results in the A1 to A4 rows. Second script `--rolling` run the same day (70 m on a taxiway, no emergency stop): settles A4. Also seen: `PARKING_BRAKE_SET` works both ways; at idle the C172 already rolls at 5.7 kt, so holding 4 kt needs the brakes (useful for E1); brakes at 50 % stop it from 3.5 kt in 1.4 s and 1.4 m |
 
 ### What test D2 does
 
