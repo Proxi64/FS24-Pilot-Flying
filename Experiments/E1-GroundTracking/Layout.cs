@@ -16,17 +16,32 @@ internal sealed record Segment(int Path, int Type, string Name, double AE, doubl
 /// </summary>
 internal sealed class Layout
 {
-    private const double MetresPerDegree = 111_320;
+    // Metres per degree on the WGS84 ellipsoid at the reference latitude (meridian and parallel radii of curvature).
+    // A sphere of 111,320 m per degree is 0.2 % off in latitude and 0.16 % in longitude at Pau: about 1.5 m of lateral
+    // error 950 m from the reference point (tests D4 and E1, 09/10/2026, confirmed with the GSX ground map).
+    private static (double Lat, double Lon) MetresPerDegree(double lat0)
+    {
+        const double a = 6378137, e2 = 0.00669437999014;
+        var phi = lat0 * Math.PI / 180;
+        var w = 1 - e2 * Math.Sin(phi) * Math.Sin(phi);
+        return (a * (1 - e2) / Math.Pow(w, 1.5) * Math.PI / 180, a / Math.Sqrt(w) * Math.Cos(phi) * Math.PI / 180);
+    }
 
     public string Icao = "";
     public double Lat0, Lon0;
     public List<Segment> Segments { get; } = [];
 
-    public (double East, double North) Local(double lat, double lon) =>
-        ((lon - Lon0) * MetresPerDegree * Math.Cos(Lat0 * Math.PI / 180), (lat - Lat0) * MetresPerDegree);
+    public (double East, double North) Local(double lat, double lon)
+    {
+        var m = MetresPerDegree(Lat0);
+        return ((lon - Lon0) * m.Lon, (lat - Lat0) * m.Lat);
+    }
 
-    public (double Lat, double Lon) Geo(double east, double north) =>
-        (Lat0 + north / MetresPerDegree, Lon0 + east / (MetresPerDegree * Math.Cos(Lat0 * Math.PI / 180)));
+    public (double Lat, double Lon) Geo(double east, double north)
+    {
+        var m = MetresPerDegree(Lat0);
+        return (Lat0 + north / m.Lat, Lon0 + east / m.Lon);
+    }
 
     public static Layout Load(string file)
     {

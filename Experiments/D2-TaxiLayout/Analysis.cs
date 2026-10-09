@@ -4,7 +4,6 @@ namespace PilotFlying.Experiments.TaxiLayout;
 
 internal static class Analysis
 {
-    private const double MetresPerDegree = 111_320;
 
     public static readonly string[] PathTypes = ["NONE", "TAXI", "RUNWAY", "PARKING", "PATH", "CLOSED", "VEHICLE", "ROAD", "PAINTEDLINE"];
     public static readonly string[] PointTypes = ["NONE", "NORMAL", "HOLD_SHORT", "(3 ?)", "ILS_HOLD_SHORT", "HOLD_SHORT_NO_DRAW", "ILS_HOLD_SHORT_NO_DRAW"];
@@ -32,11 +31,28 @@ internal static class Analysis
 
     // ------------------------------------------------------------------ geometry (local east / north frame, metres)
 
-    public static (double East, double North) Local(AirportLayout a, double lat, double lon) =>
-        ((lon - a.Lon) * MetresPerDegree * Math.Cos(a.Lat * Math.PI / 180), (lat - a.Lat) * MetresPerDegree);
+    // Metres per degree on the WGS84 ellipsoid at the reference latitude (meridian and parallel radii of curvature).
+    // A sphere of 111,320 m per degree is 0.2 % off in latitude and 0.16 % in longitude at Pau: about 1.5 m of lateral
+    // error 950 m from the reference point (tests D4 and E1, 09/10/2026, confirmed with the GSX ground map).
+    public static (double Lat, double Lon) MetresPerDegree(double lat0)
+    {
+        const double a = 6378137, e2 = 0.00669437999014;
+        var phi = lat0 * Math.PI / 180;
+        var w = 1 - e2 * Math.Sin(phi) * Math.Sin(phi);
+        return (a * (1 - e2) / Math.Pow(w, 1.5) * Math.PI / 180, a / Math.Sqrt(w) * Math.Cos(phi) * Math.PI / 180);
+    }
 
-    public static (double Lat, double Lon) Geo(AirportLayout a, double east, double north) =>
-        (a.Lat + north / MetresPerDegree, a.Lon + east / (MetresPerDegree * Math.Cos(a.Lat * Math.PI / 180)));
+    public static (double East, double North) Local(AirportLayout a, double lat, double lon)
+    {
+        var m = MetresPerDegree(a.Lat);
+        return ((lon - a.Lon) * m.Lon, (lat - a.Lat) * m.Lat);
+    }
+
+    public static (double Lat, double Lon) Geo(AirportLayout a, double east, double north)
+    {
+        var m = MetresPerDegree(a.Lat);
+        return (a.Lat + north / m.Lat, a.Lon + east / m.Lon);
+    }
 
     /// <summary>Taxi point position; <paramref name="swapped"/>: BIAS_X = north and BIAS_Z = east (hypothesis being tested).</summary>
     public static (double East, double North) Position(TaxiPoint pt, bool swapped = false) => swapped ? (pt.Z, pt.X) : (pt.X, pt.Z);

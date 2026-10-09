@@ -65,8 +65,10 @@ Read first, in this order:
   may be constant placeholders (LFBP: 30 m / 0 / 0). Verified by experiment D2 (LFBP, LFPG).
 - `SimConnect_RequestAllFacilities` (airports) answers with `SIMCONNECT_RECV_AIRPORT_LIST` (message 18, 36-byte
   entries), not `FACILITY_MINIMAL_LIST`.
-- `BIAS_X` = east, `BIAS_Z` = north, metres from the airport reference point (verified in a previous project):
-  `lat = lat0 + z / 111320`, `lon = lon0 + x / (111320 · cos lat0)`.
+- `BIAS_X` = east, `BIAS_Z` = north, metres from the airport reference point. Convert with **WGS84** metres per degree
+  at the reference latitude: `mLat = a(1−e²)/w^1.5 · π/180`, `mLon = a/√w · cos φ0 · π/180`, `w = 1 − e² sin² φ0`
+  (a = 6378137, e² = 0.00669438). The sphere `111320` m/degree (previous project) gives ~1.5 m of lateral error
+  1 km from the reference point (tests D4/E1, confirmed with the GSX ground map).
 - `TAXI_PATH.TYPE`: 1 TAXI, 2 RUNWAY, 3 PARKING (END = parking index), 4 PATH, 5 CLOSED, 6 VEHICLE, 7 ROAD,
   8 PAINTEDLINE. `TAXI_POINT.TYPE`: 2 HOLD_SHORT, 4 ILS_HOLD_SHORT, 5/6 same without markings.
 - `SimConnect_FlightPlanLoad` has no effect in MSFS 2024. A hand-written flight plan inside a `.FLT` file crashed MSFS.
