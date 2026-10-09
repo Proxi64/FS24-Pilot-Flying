@@ -36,4 +36,4 @@ Without MSFS: `dotnet run --project Experiments/D4-CentrelineMatch -- --syntheti
 - Report: overall, by taxiway name and by segment. A constant offset everywhere is the pilot's habit; a segment far
   from the others means the layout and the paint differ there.
 
-Tested on 9 October 2026 outside the simulator only (build + analysis on a synthetic track): not run in MSFS yet.
+Run in MSFS 2024 at LFBP on 9 October 2026: see the D4 row of `06-feasibility.md` for the results.
