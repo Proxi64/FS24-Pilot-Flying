@@ -10,6 +10,10 @@
 //        dotnet run -- --analyse <frames.csv>          replay the analysis of a saved "...-frames.csv" file
 //        dotnet run -- --synthetic                     run the law on a simple C172 model (no MSFS needed)
 //        dotnet run -- --line ICAO path along heading  which straight line would be followed from that point
+// Route mode (taxi from the parking spot to a hold-short point, following a clearance):
+//        dotnet run -- ICAO --route C,NG,NW,N5                  run in MSFS, aircraft at a parking spot
+//        dotnet run -- --route-synthetic ICAO parking C,NG,NW,N5   simulate it from that parking spot (no MSFS)
+//        dotnet run -- --route-analyse ICAO <frames.csv> C,NG,NW,N5   replay the analysis of a saved route run
 
 using System.Globalization;
 using System.Text;
@@ -39,6 +43,43 @@ if (args.Length >= 5 && args[0] == "--line")
     double ue = (seg.BE - seg.AE) / seg.Length, un = (seg.BN - seg.AN) / seg.Length;
     var found = Line.From(l, seg.AE + ue * d, seg.AN + un * d, double.Parse(args[4]), out var why);
     Console.WriteLine(found is null ? "Refused: " + why : $"{found.Name} (path {found.Path}), bearing {found.Bearing:F1}°, {found.StopAlong - found.StartAlong:F0} m of automatic taxi");
+    return 0;
+}
+if (args.Length >= 4 && args[0] == "--route-synthetic" || args.Length >= 3 && args[1] == "--route" || args.Length >= 4 && args[0] == "--route-analyse")
+{
+    var icao = (args[0].StartsWith("--") ? args[1] : args[0]).ToUpperInvariant();
+    var layout = Layout.Load(Path.Combine(folder, $"layout-{icao}.json"));
+    var clearance = args[^1].Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+    List<RouteFrame>? routeFrames;
+    Route? route;
+    if (args[0] == "--route-analyse")
+    {
+        (routeFrames, notes) = RouteMode.Load(args[2]);
+        var pk = layout.Parkings.MinBy(p => Math.Pow(p.Value.E - routeFrames[0].State.E, 2) + Math.Pow(p.Value.N - routeFrames[0].State.N, 2)).Key;
+        route = Route.Find(layout, pk, clearance, out _);
+        Console.WriteLine(RouteMode.Report(routeFrames, notes, route, Path.GetFileName(args[2])));
+        return 0;
+    }
+    if (args[0] == "--route-synthetic")
+    {
+        (routeFrames, notes, route) = RouteMode.Simulate(layout, int.Parse(args[2]), clearance);
+        basePath = Path.Combine(folder, $"E1-route-synthetic-{icao}");
+    }
+    else
+    {
+        Console.WriteLine($"Experiment E1, route mode at {icao}: Asobo C172 at a parking spot, engine at idle, parking brake set. Clearance: {string.Join(" ", clearance)}.");
+        notes = [];
+        routeFrames = RouteMode.Run(layout, clearance, notes, out route, out var routeError);
+        if (routeFrames is null) { Console.WriteLine(routeError); return 1; }
+        basePath = Path.Combine(folder, $"E1-route-{icao}-{DateTime.Now:yyyyMMdd-HHmmss}");
+    }
+    Directory.CreateDirectory(folder);
+    var routeReport = RouteMode.Report(routeFrames, notes, route, Path.GetFileName(basePath));
+    Console.WriteLine(routeReport);
+    RouteMode.Save(routeFrames, notes, basePath);
+    File.WriteAllText(basePath + "-report.txt", routeReport, new UTF8Encoding(false));
+    if (route is not null) File.WriteAllText(basePath + "-track.geojson", RouteMode.GeoJson(layout, route, routeFrames), new UTF8Encoding(false));
+    Console.WriteLine($"Files written: {basePath}-report.txt, -frames.csv, -notes.txt, -track.geojson");
     return 0;
 }
 if (args.Length >= 1 && args[0] == "--synthetic")
