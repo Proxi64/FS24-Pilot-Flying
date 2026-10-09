@@ -40,9 +40,9 @@ Status: ✅ confirmed · 🟡 partly · ❓ to be checked · ❌ impossible or d
 
 | # | Question | How to check | Status |
 |---|---|---|---|
-| D1 | Are runway hold-short points provided? | SDK 2024 docs | ✅ `TAXI_POINT.TYPE`: 2 HOLD_SHORT, 4 ILS_HOLD_SHORT (+ 5 and 6 without markings), with `ORIENTATION`. To be seen on real data (test D2) |
-| D2 | Are taxiway names available and linked to the paths? | SDK docs + test D2 | 🟡 `TAXI_NAME` and `NAME_INDEX` exist; the link between them remains to be confirmed |
-| D3 | What do the path types mean? | SDK 2024 docs | ✅ 1 TAXI, 2 RUNWAY, 3 PARKING, 4 PATH, 5 CLOSED, 6 VEHICLE, 7 ROAD, 8 PAINTEDLINE |
+| D1 | Are runway hold-short points provided? | SDK 2024 docs | ✅ `TAXI_POINT.TYPE`: 2 HOLD_SHORT, 4 ILS_HOLD_SHORT (+ 5 and 6 without markings), with `ORIENTATION`. Seen at LFBP (test D2, 09/10/2026): 8 points, all type 5 (no markings), 147 to 167 m from the runway centreline, all on the main network. LFPG (default scenery): 147 points, types 5 and 6 (ILS), 71 to 310 m from the centreline, all on the main network |
+| D2 | Are taxiway names available and linked to the paths? | SDK docs + test D2 | ✅ `NAME_INDEX` is the index in the `TAXI_NAME` list (0 = unnamed). LFBP (test D2, 09/10/2026): 16 names, each forming 1 or 2 continuous pieces; 12 of them also exist in OpenStreetMap (https://www.openstreetmap.org, ODbL) at the same place, 6 to 85 m apart for short taxiways (E, G, N, N1, N3, N5, S2). C, M and NG exist only in MSFS, B, BA and BC only in OSM. LFPG: 225 names, 217 of them in a single piece. On RUNWAY paths (type 2), `NAME_INDEX` is instead the index of the runway in the airport's runway list |
+| D3 | What do the path types mean? | SDK 2024 docs | ✅ 1 TAXI, 2 RUNWAY, 3 PARKING, 4 PATH, 5 CLOSED, 6 VEHICLE, 7 ROAD, 8 PAINTEDLINE. Sceneries do not use them the same way: LFBP (France VFR) mostly TAXI, LFPG (Asobo) almost only PATH (4,667 PATH against 3 TAXI): both types must be treated as taxiways |
 | D4 | Does the layout centreline match the painted line of the scenery (default and payware sceneries)? | Taxi manually and compare the aircraft position with the graph | ❓ |
 | D5 | Can we know the position of other aircraft on the ground (AI traffic, BeyondATC) to stop behind them? | `SimConnect_RequestDataOnSimObjectType` | ❓ |
 | D6 | Can we retrieve the BeyondATC taxi clearance? | Study of an existing BeyondATC-related tool | ❓ |
@@ -60,7 +60,7 @@ Status: ✅ confirmed · 🟡 partly · ❓ to be checked · ❌ impossible or d
 
 | Test | Folder | Questions | State |
 |---|---|---|---|
-| D2 — complete taxi layout | `Experiments/D2-TaxiLayout/` | D1, D2, D3, axis convention, network connectivity | Ready (9 October 2026): builds, analysis checked on synthetic data. The SimConnect reading remains to be validated in the simulator |
+| D2 — complete taxi layout | `Experiments/D2-TaxiLayout/` | D1, D2, D3, axis convention, network connectivity | Run in MSFS at LFBP, France VFR payware scenery from the Community folder (9 October 2026). Confirmed: element types 2 START and 17 TAXI_NAME, BIAS_X = east / BIAS_Z = north (median 0.4 m against 297 m), network connected to all parking spots and hold-short points. Run again at LFPG, default Asobo scenery (9 October 2026): same conclusions (axes: median 1.3 m against 544 m; 4,313-node main network, 374 parking spots all connected). `WIDTH`, `CENTER_LINE` and `WEIGHT` are transmitted (LFPG: widths 5 to 60 m, painted centreline on 3,252 paths, weight 500,000 lb) but depend on the scenery: LFBP gives 30 m, 0 and 0 everywhere. They cannot be relied on without a fallback |
 
 ### What test D2 does
 

@@ -48,7 +48,7 @@ Source: [SimConnect_AddToFacilityDefinition](https://docs.flightsimulator.com/ms
 | `CENTER_LINE`, `CENTER_LINE_LIGHTED` | painted centreline present, lit |
 | `LEFT_EDGE`, `RIGHT_EDGE` (+ lighting) | edge markings |
 | `START`, `END` | index of the start and end point (for type 3, `END` is the parking spot index) |
-| `NAME_INDEX` | index of the taxiway name (the documentation does not say which list: most likely `TAXI_NAME`, to be confirmed) |
+| `NAME_INDEX` | index in the `TAXI_NAME` list (0 = unnamed); on RUNWAY paths, index of the runway instead (test D2) |
 
 ### Other useful elements
 

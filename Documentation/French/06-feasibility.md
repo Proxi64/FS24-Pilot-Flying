@@ -40,9 +40,9 @@ Statuts : ✅ confirmé · 🟡 en partie · ❓ à vérifier · ❌ impossible 
 
 | # | Question | Comment vérifier | Statut |
 |---|---|---|---|
-| D1 | Les points d'attente avant piste sont-ils fournis ? | Doc SDK 2024 | ✅ `TAXI_POINT.TYPE` : 2 HOLD_SHORT, 4 ILS_HOLD_SHORT (+ 5 et 6 sans marquage), avec `ORIENTATION`. À voir sur des données réelles (essai D2) |
-| D2 | Les noms des voies sont-ils disponibles et reliés aux tronçons ? | Doc SDK + essai D2 | 🟡 `TAXI_NAME` et `NAME_INDEX` existent ; le lien entre les deux reste à confirmer |
-| D3 | Que signifient les types de tronçons ? | Doc SDK 2024 | ✅ 1 TAXI, 2 RUNWAY, 3 PARKING, 4 PATH, 5 CLOSED, 6 VEHICLE, 7 ROAD, 8 PAINTEDLINE |
+| D1 | Les points d'attente avant piste sont-ils fournis ? | Doc SDK 2024 | ✅ `TAXI_POINT.TYPE` : 2 HOLD_SHORT, 4 ILS_HOLD_SHORT (+ 5 et 6 sans marquage), avec `ORIENTATION`. Vu à LFBP (essai D2, 09/10/2026) : 8 points, tous de type 5 (sans marquage), à 147–167 m de l'axe de piste, tous sur le réseau principal. LFPG (scène par défaut) : 147 points, types 5 et 6 (ILS), à 71–310 m de l'axe, tous sur le réseau principal |
+| D2 | Les noms des voies sont-ils disponibles et reliés aux tronçons ? | Doc SDK + essai D2 | ✅ `NAME_INDEX` est l'indice dans la liste `TAXI_NAME` (0 = sans nom). LFBP (essai D2, 09/10/2026) : 16 noms, chacun formant 1 ou 2 morceaux continus ; 12 existent aussi dans OpenStreetMap (https://www.openstreetmap.org, ODbL) au même endroit, à 6–85 m près pour les voies courtes (E, G, N, N1, N3, N5, S2). C, M et NG n'existent que dans MSFS, B, BA et BC que dans OSM. LFPG : 225 noms, dont 217 d'un seul morceau. Sur les tronçons RUNWAY (type 2), `NAME_INDEX` est en revanche l'indice de la piste dans la liste des pistes du terrain |
+| D3 | Que signifient les types de tronçons ? | Doc SDK 2024 | ✅ 1 TAXI, 2 RUNWAY, 3 PARKING, 4 PATH, 5 CLOSED, 6 VEHICLE, 7 ROAD, 8 PAINTEDLINE. Les scènes ne s'en servent pas de la même façon : LFBP (France VFR) surtout TAXI, LFPG (Asobo) presque uniquement PATH (4 667 PATH contre 3 TAXI) : les deux types doivent être traités comme des voies de circulation |
 | D4 | L'axe des voies du plan coïncide-t-il avec la ligne peinte de la scène (scène de base et payware) ? | Rouler à la main et comparer la position de l'avion au graphe | ❓ |
 | D5 | Peut-on connaître la position des autres avions au sol (trafic IA, BeyondATC) pour s'arrêter derrière eux ? | `SimConnect_RequestDataOnSimObjectType` | ❓ |
 | D6 | Peut-on récupérer la clairance de roulage de BeyondATC ? | Étude d'un outil existant autour de BeyondATC | ❓ |
@@ -60,7 +60,7 @@ Statuts : ✅ confirmé · 🟡 en partie · ❓ à vérifier · ❌ impossible 
 
 | Essai | Dossier | Questions | État |
 |---|---|---|---|
-| D2 — plan de roulage complet | `Experiments/D2-TaxiLayout/` | D1, D2, D3, convention des axes, connexité du réseau | Prêt (9 octobre 2026) : compile, analyse vérifiée sur données factices. La lecture SimConnect reste à valider dans le simulateur |
+| D2 — plan de roulage complet | `Experiments/D2-TaxiLayout/` | D1, D2, D3, convention des axes, connexité du réseau | Lancé dans MSFS à LFBP, scène payware France VFR du dossier Community (9 octobre 2026). Confirmé : types d'éléments 2 START et 17 TAXI_NAME, BIAS_X = est / BIAS_Z = nord (médiane 0,4 m contre 297 m), réseau relié à toutes les places et à tous les points d'attente. Relancé à LFPG, scène Asobo par défaut (9 octobre 2026) : mêmes conclusions (axes : médiane 1,3 m contre 544 m ; réseau principal de 4 313 nœuds, 374 places toutes reliées). `WIDTH`, `CENTER_LINE` et `WEIGHT` sont bien transmis (LFPG : largeurs de 5 à 60 m, ligne peinte sur 3 252 tronçons, masse 500 000 lb) mais dépendent de la scène : LFBP donne 30 m, 0 et 0 partout. On ne peut pas s'y fier sans valeur de repli |
 
 ### Ce que fait l'essai D2
 

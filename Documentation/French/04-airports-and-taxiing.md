@@ -48,7 +48,7 @@ Source : [SimConnect_AddToFacilityDefinition](https://docs.flightsimulator.com/m
 | `CENTER_LINE`, `CENTER_LINE_LIGHTED` | présence d'une ligne axiale peinte, éclairée |
 | `LEFT_EDGE`, `RIGHT_EDGE` (+ éclairage) | marquage des bords |
 | `START`, `END` | rang du point de départ et d'arrivée (pour le type 3, `END` est le rang de la place) |
-| `NAME_INDEX` | rang du nom de la voie (la doc ne précise pas la liste visée : sans doute `TAXI_NAME`, à confirmer) |
+| `NAME_INDEX` | indice dans la liste `TAXI_NAME` (0 = sans nom) ; sur les tronçons RUNWAY, indice de la piste (essai D2) |
 
 ### Autres éléments utiles
 

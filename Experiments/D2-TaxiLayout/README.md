@@ -38,5 +38,4 @@ Requirements: .NET 10 SDK, MSFS 2024 SDK (for the native `SimConnect.dll`, copie
 The element numbers for START (2) and TAXI_NAME (17) are assumed; if they are wrong, the report lists them under
 "Unexpected element types".
 
-Tested on 9 October 2026 outside the simulator only (build + analysis on synthetic data): the SimConnect part has
-not run yet.
+Run in MSFS 2024 at LFBP on 9 October 2026: see the "Tests" table of `06-feasibility.md` for the results.

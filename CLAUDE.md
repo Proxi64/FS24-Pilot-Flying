@@ -59,7 +59,10 @@ Read first, in this order:
 - **Facilities API** works from the main menu (no flight needed) and returns the layout as MSFS loads it,
   payware sceneries included. Data arrives packed (no alignment), field by field in definition order.
   Messages: `SIMCONNECT_RECV_FACILITY_DATA` (28), `FACILITY_DATA_END` (29). Element types: 0 airport, 1 runway,
-  14 taxi point, 15 parking, 16 taxi path (verified); 2 start and 17 taxi name (assumed, checked by experiment D2).
+  14 taxi point, 15 parking, 16 taxi path (verified); 2 start, 17 taxi name (verified by experiment D2, LFBP).
+- `TAXI_PATH.NAME_INDEX` = index in the `TAXI_NAME` list (0 = unnamed), but on RUNWAY paths = index of the runway.
+  Sceneries differ: Asobo uses PATH (4) for taxiways, France VFR uses TAXI (1); `WIDTH` / `CENTER_LINE` / `WEIGHT`
+  may be constant placeholders (LFBP: 30 m / 0 / 0). Verified by experiment D2 (LFBP, LFPG).
 - `SimConnect_RequestAllFacilities` (airports) answers with `SIMCONNECT_RECV_AIRPORT_LIST` (message 18, 36-byte
   entries), not `FACILITY_MINIMAL_LIST`.
 - `BIAS_X` = east, `BIAS_Z` = north, metres from the airport reference point (verified in a previous project):
