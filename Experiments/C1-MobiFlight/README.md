@@ -19,8 +19,8 @@ Requirement: the MobiFlight module (`mobiflight-event-module`) in the Community 
    dotnet run
    ```
 3. About 40 s. The only visible effect: the **beacon light blinks 4 times, then once more**, and ends in its initial state.
-4. Results in `results\`: `C1-<date>-report.txt`, the aircraft's LVar list `C1-<date>-lvars.txt`, the raw log
-   `C1-<date>-log.csv`.
+4. Results in `results\`: `C1-<date>-report.txt`, the aircraft's LVar list `C1-<date>-lvars.txt`, its input events
+   `C1-<date>-inputevents.txt`, the raw log `C1-<date>-log.csv`.
 
 Run it once on the Asobo C172, then once on the Fenix A320 (its LVar list prepares questions B1 to B4).
 
@@ -41,7 +41,8 @@ Replay the analysis: `dotnet run -- --analyse results\C1-<date>-log.csv`. Withou
 | 9. Native: `SimConnect_EnumerateInputEvents`, then `Get` / `Subscribe` / `SetInputEvent` on a beacon input event | The aircraft's input events ("B:" variables, see https://docs.mobiflight.com/guides/input-events-2024/), saved to a file; the beacon toggled twice more |
 
 SimConnect constants checked in the MSFS 2024 SDK header (`SimConnect.h`) on 9 October 2026; module protocol read in
-its source (version 1.0.1, the latest release, also the installed one).
+its source (version 1.0.1, the latest release, also the installed one). Native LVars and input events: MSFS 2024 SDK
+documentation (`SimConnect_AddToDataDefinition`, `SimConnect_EnumerateInputEvents`) and header.
 
 Tested on 9 October 2026 outside the simulator only (build + report on synthetic data): the SimConnect part has not
 run yet.
