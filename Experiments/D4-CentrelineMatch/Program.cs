@@ -34,6 +34,7 @@ if (mode == "--analyse" && args.Length >= 2)
     fixes = Track.Load(args[1]);
     basePath = args[1].EndsWith("-track.csv") ? args[1][..^"-track.csv".Length] : args[1];
     Console.WriteLine(Analysis.Report(layout, fixes, Path.GetFileName(basePath)));
+    File.WriteAllText(basePath + "-track.geojson", Analysis.GeoJson(layout, fixes), new UTF8Encoding(false));
     return 0;
 }
 if (mode == "--synthetic")

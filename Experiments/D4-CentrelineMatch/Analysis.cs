@@ -93,10 +93,9 @@ internal static class Analysis
         return d;
     }
 
-    /// <summary>The track (orange = used fixes, grey = others) and the aircraft network (blue), for geojson.io.</summary>
+    /// <summary>The track (thick red line) and the aircraft network (thin blue lines), for geojson.io.</summary>
     public static string GeoJson(Layout layout, List<Fix> fixes)
     {
-        var used = Select(layout, fixes).Select(u => u.Fix).ToHashSet();
         var features = new List<object>();
         foreach (var s in layout.Segments)
         {
@@ -109,17 +108,13 @@ internal static class Analysis
                 properties = new Dictionary<string, object> { ["path"] = s.Path, ["name"] = s.Name, ["stroke"] = "#1d6fd8", ["stroke-width"] = 1 },
             });
         }
-        foreach (var f in fixes.Where((_, i) => i % 5 == 0))
-            features.Add(new
-            {
-                type = "Feature",
-                geometry = new { type = "Point", coordinates = new[] { Math.Round(f.Lon, 8), Math.Round(f.Lat, 8) } },
-                properties = new Dictionary<string, object>
-                {
-                    ["t"] = Math.Round(f.T, 1), ["kt"] = Math.Round(f.GroundSpeed, 1),
-                    ["marker-color"] = used.Contains(f) ? "#e9a23b" : "#999999", ["marker-size"] = "small",
-                },
-            });
+        // The track as a thick red line (one point every 5 frames), easier to see than markers.
+        features.Add(new
+        {
+            type = "Feature",
+            geometry = new { type = "LineString", coordinates = fixes.Where((_, i) => i % 5 == 0).Select(f => new[] { Math.Round(f.Lon, 8), Math.Round(f.Lat, 8) }).ToArray() },
+            properties = new Dictionary<string, object> { ["name"] = "aircraft track", ["stroke"] = "#e63946", ["stroke-width"] = 3 },
+        });
         return JsonSerializer.Serialize(new { type = "FeatureCollection", features }, new JsonSerializerOptions { WriteIndented = false });
     }
 
