@@ -53,7 +53,7 @@ Status: ✅ confirmed · 🟡 partly · ❓ to be checked · ❌ impossible or d
 |---|---|---|---|
 | E1 | Is ground path following stable at the rate measured in A3 (C172, then A320)? | Test at Pau (LFBP) | 🟡 First automatic taxi (test E1, 09/10/2026, C172, LFBP taxiway NE, 150 m at 5 kt, commands at 30 Hz, frames at 40 Hz): the law holds the line within a few centimetres without oscillation, then stops 2 m after braking. Runs 1 and 2 used the spherical conversion: the aircraft, actually on the paint, was measured 1.5 m off, so the program steered 1.5 m right of the yellow line (Hugues saw it in the cockpit and on the GSX map). Conversion corrected to WGS84 (the start position then reads 0.07 to 0.12 m from the line); the capture was also softened after run 1 (full lock at 0.7 kt). Run 3 (WGS84 conversion, consistency check): start 0.13 m from the line, then offset RMS 0.01 m, max 0.07 m, heading error RMS 0.2°, no swing beyond ±5 cm in 56 s; Hugues saw the aircraft stay on the yellow line all the way. Straight-line tracking of the C172 confirmed. **Route run (09/10/2026)**: from stand 8A to the runway 31 hold-short point via C, NG, NW (clearance "C NG NW N5", route computed in the layout), 1,212 m in 8 min 44, pure pursuit law: offset ≤ 0.11 m on straight parts, p95 0.29 m and max 0.76 m in turns (stand exit U-turn), nose wheel up to 17°; stopped 4.8 m before the hold-short point (target 4 m). Hugues: "first turn very well negotiated, the whole route the same, stop at the hold point". The program did not end its stop sequence by itself (fixed since); Hugues ended it with Esc. A320: to do |
 | E2 | A320 takeoff: centreline tracking and rotation with the sidestick until AP at 100 ft | Test | ❓ |
-| E3 | Do we need a WASM module for latency? | Follows from A3, E1, E2 | ❓ (good sign: Pomax takes off and lands light aircraft from outside, under MSFS 2020) |
+| E3 | Do we need a WASM module for latency? | Follows from A3, E1, E2 | 🟡 Not for taxiing: test E1 taxied a whole route from the application (commands at 30 Hz, positions at about 40 Hz). Takeoff and flare (E2) remain to be measured (good sign: Pomax takes off and lands light aircraft from outside, under MSFS 2020) |
 | E4 | Under which licence is Pomax's tutorial code? | Reading the repository | ❓ |
 
 ## Tests
@@ -80,10 +80,12 @@ It reads the complete layout of one airport, with every field useful for taxiing
 
 ## Proposed order
 
-1. **D2** in the simulator (read-only, no risk).
-2. **A1 to A4** on an Asobo aircraft: a console that reads the state and sends axes.
-3. **C1**, then **B1 to B4** on the Fenix.
-4. **D4 + E1**: first automatic taxi at Pau.
-5. **B5, E2**: autoland and takeoff.
+1. ✅ **D2** in the simulator (read-only, no risk).
+2. ✅ **A1 to A4** on an Asobo aircraft: a console that reads the state and sends axes (A1 and A2 to complete in flight).
+3. ✅ **C1**, then 🟡 **B1 to B4** on the Fenix (to confirm in flight: sidestick, FMA).
+4. ✅ **D4 + E1**: automatic taxi at Pau, a straight line, then a whole route from the stand to the hold-short point (C172).
+5. **Next, proposed**: the same route with the Fenix A320 (main gear in turns, speed control of a jet).
+6. **B5, E2**: autoland and takeoff.
+7. Still open: D5 (other aircraft on the ground), D6 (BeyondATC clearance), B6 (Fenix terms of use), E4 (Pomax licence).
 
 Afterwards: set the V1 scope and the architecture.

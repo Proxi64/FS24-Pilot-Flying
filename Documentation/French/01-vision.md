@@ -65,7 +65,7 @@ Conséquence : la **fiabilité** passe avant le réalisme. Une partie du public 
 | V3 | Roulage jusqu'à la place d'arrivée, suivi des clairances de l'ATC | Tous |
 | Plus tard | Mise en route depuis « cold & dark », programmation du FMS, checklists, profils supplémentaires | — |
 
-L'ordre peut changer selon les résultats de l'étude de faisabilité. Le roulage, par exemple, est plus facile à tester que l'atterrissage (voir [06](06-feasibility.md)).
+L'ordre peut changer selon les résultats de l'étude de faisabilité. Le roulage, par exemple, est plus facile à tester que l'atterrissage, et c'est la première phase qui a fonctionné : le 9 octobre 2026, un Cessna 172 a roulé seul de sa place jusqu'au point d'attente de la piste à Pau (voir [06](06-feasibility.md)).
 
 **Pourquoi le Fenix A320 en premier :** il sait déjà faire beaucoup de choses seul (autoland ILS avec arrondi et roulement, autopoussée, vol managé). Il donne donc vite un vol complet, ce qui permet de concentrer l'effort sur le roulage et le décollage. C'est aussi un avion très demandé, et il est disponible pour les tests.
 

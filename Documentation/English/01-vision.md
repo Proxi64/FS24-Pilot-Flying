@@ -65,7 +65,7 @@ Consequence: **reliability** comes before realism. Part of the audience cannot t
 | V3 | Taxi to the arrival gate, following ATC clearances | All |
 | Later | Start-up from cold & dark, FMS programming, checklists, more profiles | — |
 
-The order may change depending on the feasibility study. Taxiing, for example, is easier to test than landing (see [06](06-feasibility.md)).
+The order may change depending on the feasibility study. Taxiing, for example, is easier to test than landing, and it is the first phase shown to work: on 9 October 2026 a Cessna 172 taxied on its own from its stand to the runway hold-short point at Pau (see [06](06-feasibility.md)).
 
 **Why the Fenix A320 first:** it already does a lot on its own (ILS autoland with flare and rollout, autothrust, managed flight). It therefore quickly gives a complete flight, which lets us focus on taxiing and takeoff. It is also a very popular aircraft, and it is available for testing.
 

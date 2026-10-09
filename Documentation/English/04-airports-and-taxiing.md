@@ -14,14 +14,14 @@ This is the API GSX uses. With `SimConnect_AddToFacilityDefinition` and `SimConn
 - **List of all airports** (`SimConnect_RequestAllFacilities`): 85,791 airports received in 0.1 s. The response uses `SIMCONNECT_RECV_AIRPORT_LIST` (message no. 18, 36-byte entries), not `FACILITY_MINIMAL_LIST` as one might expect.
 - **Reading all layouts**: 85,764 layouts in 7.8 minutes, 32 simultaneous requests, local JSON copy (one file per airport), automatic re-read when the format changes.
 - **Payware scenery taken into account**: Biarritz (LFBZ) with the Flightbeam scenery returns its 27 parking spots.
-- **Axes**: `BIAS_X` = **east**, `BIAS_Z` = **north**, in metres from the airport reference point (verified on site). Conversion: `lat = lat0 + z / 111,320`; `lon = lon0 + x / (111,320 · cos lat0)`. The documentation speaks of "longitudinal / latitudinal" axes, hence the automatic check included in test D2.
+- **Axes**: `BIAS_X` = **east**, `BIAS_Z` = **north**, in metres from the airport reference point (verified on site). Conversion to latitude / longitude: **with WGS84 metres per degree at the reference latitude** (meridian and parallel radii of curvature). The spherical `111,320 m per degree` of the previous project is about 1.5 m off 1 km from the reference point (corrected on 9 October 2026, tests D4 and E1). The documentation speaks of "longitudinal / latitudinal" axes; test D2 confirmed east / north.
 - Data arrives **packed, without alignment** (read field by field in definition order); each element arrives in a `SIMCONNECT_RECV_FACILITY_DATA` message (no. 28) whose `Type` field gives its kind (0 airport, 1 runway, 14 taxi point, 15 parking, 16 taxi path); the end is signalled by `FACILITY_DATA_END` (no. 29).
 
 ### What a stored layout contains
 
 Reference point and altitude; **runways** (centre, heading, length, width, surface, designations); **parking spots** (type, name, number, heading, radius, position); helipads; **taxi paths** (end points, width, type); radio frequencies.
 
-Example of Pau (LFBP): 2 runways, 22 parking spots, 489 taxi paths, 469 nodes. The network is well connected (383 pass-through nodes, 60 intersections, 26 dead ends) and curves are already finely split (segments from 2.5 to 729 m, median 12 m).
+Example of Pau (LFBP), as stored by the previous project: 2 runways, 22 parking spots, 489 taxi paths, 469 nodes (read again with every field by test D2, France VFR scenery, 9 October 2026: 509 paths, 458 taxi points, 16 taxiway names, 8 hold-short points). The network is well connected (383 pass-through nodes, 60 intersections, 26 dead ends) and curves are already finely split (segments from 2.5 to 729 m, median 12 m).
 
 ## What the 2024 SDK documentation says (read on 9 October 2026)
 
@@ -68,16 +68,17 @@ Source: [SimConnect_AddToFacilityDefinition](https://docs.flightsimulator.com/ms
 
 Test `Experiments/D2-TaxiLayout` already reads all of this for one airport and automatically checks the uncertain points (see [06](06-feasibility.md)).
 
-## The intended taxi chain
+## The taxi chain
 
 ```
-airport layout
+airport layout (Facilities API; positions converted with WGS84 scales)
   → graph (nodes = taxi points and parking spots; edges = paths of type 1 to 4)
-  → A* route: parking spot → runway hold-short point (or following the ATC clearance)
-  → turn smoothing
-  → path following (main gear on the line)
-  → speed regulation
-  → stop at the hold-short point, wait for clearance
+  → route following the ATC clearance: parking spot (exit ahead of the aircraft) → runway hold-short point
+  → path following: pure pursuit + drift correction (main gear on the line for large aircraft)
+  → speed regulation: cruise speed, slower before turns, braking
+  → stop before the hold-short point, wait for clearance
 ```
+
+**Validated with the C172 at Pau (test E1, 9 October 2026)**: from stand 8A to the runway 31 hold-short point via C, NG, NW (1.2 km): offset ≤ 0.11 m on straight parts and ≤ 0.76 m in turns, stop 4.8 m before the hold-short point. The layout centrelines match the painted lines within about 0.5 m (test D4). Not done yet: the main gear in turns (large aircraft), the A320, other aircraft on the ground.
 
 And the other way round, after landing: runway exit → arrival parking spot chosen according to aircraft size (the previous project can already choose a suitable spot).

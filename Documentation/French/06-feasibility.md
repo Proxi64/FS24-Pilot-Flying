@@ -53,7 +53,7 @@ Statuts : ✅ confirmé · 🟡 en partie · ❓ à vérifier · ❌ impossible 
 |---|---|---|---|
 | E1 | Le suivi de trajectoire au sol est-il stable à la fréquence mesurée en A3 (C172, puis A320) ? | Essai à Pau (LFBP) | 🟡 Premier roulage automatique (essai E1, 09/10/2026, C172, voie NE de LFBP, 150 m à 5 kt, commandes à 30 Hz, images à 40 Hz) : la loi tient la ligne à quelques centimètres sans osciller, puis s'arrête 2 m après le freinage. Les passages 1 et 2 utilisaient la conversion sphérique : l'avion, réellement sur la peinture, était mesuré à 1,5 m, et le programme a donc roulé 1,5 m à droite de la ligne jaune (Hugues l'a vu dans le cockpit et sur la carte GSX). Conversion corrigée en WGS84 (la position de départ se lit alors à 0,07–0,12 m de la ligne) ; capture adoucie aussi après le passage 1 (braquage maximal à 0,7 kt). Passage 3 (conversion WGS84, contrôle de cohérence) : départ à 0,13 m de la ligne, puis écart RMS 0,01 m, au plus 0,07 m, cap RMS 0,2°, aucune oscillation au-delà de ±5 cm en 56 s ; Hugues a vu l'avion rester sur la ligne jaune de bout en bout. Suivi en ligne droite du C172 confirmé. **Passage en itinéraire (09/10/2026)** : de la place 8A au point d'attente de la piste 31 par C, NG, NW (clairance « C NG NW N5 », itinéraire calculé dans le plan), 1 212 m en 8 min 44, loi de poursuite (pure pursuit) : écart ≤ 0,11 m en ligne droite, p95 0,29 m et au plus 0,76 m en virage (demi-tour de sortie de place), roue avant jusqu'à 17° ; arrêt 4,8 m avant le point d'attente (cible 4 m). Hugues : « 1er virage très bien négocié, tout le trajet pareil et arrêt au point d'arrêt ». Le programme n'a pas terminé seul sa séquence d'arrêt (corrigé depuis) ; Hugues l'a terminée par Échap. A320 : à faire |
 | E2 | Décollage A320 : tenue d'axe et rotation au mini-manche jusqu'au PA à 100 ft | Essai | ❓ |
-| E3 | Faut-il un module WASM pour la latence ? | Découle de A3, E1, E2 | ❓ (indice favorable : Pomax décolle et atterrit des avions légers depuis l'extérieur, sous MSFS 2020) |
+| E3 | Faut-il un module WASM pour la latence ? | Découle de A3, E1, E2 | 🟡 Pas pour le roulage : l'essai E1 a roulé tout un itinéraire depuis l'application (commandes à 30 Hz, positions à environ 40 Hz). Décollage et arrondi (E2) restent à mesurer (indice favorable : Pomax décolle et atterrit des avions légers depuis l'extérieur, sous MSFS 2020) |
 | E4 | Sous quelle licence est le code du tutoriel de Pomax ? | Lecture du dépôt | ❓ |
 
 ## Essais
@@ -80,10 +80,12 @@ Il lit le plan complet d'un aérodrome, avec tous les champs utiles au roulage (
 
 ## Ordre proposé
 
-1. **D2** dans le simulateur (lecture seule, sans risque).
-2. **A1 à A4** sur un avion d'Asobo : une console qui lit l'état et envoie des axes.
-3. **C1**, puis **B1 à B4** sur le Fenix.
-4. **D4 + E1** : premier roulage automatique à Pau.
-5. **B5, E2** : autoland et décollage.
+1. ✅ **D2** dans le simulateur (lecture seule, sans risque).
+2. ✅ **A1 à A4** sur un avion d'Asobo : une console qui lit l'état et envoie des axes (A1 et A2 à compléter en vol).
+3. ✅ **C1**, puis 🟡 **B1 à B4** sur le Fenix (à confirmer en vol : mini-manche, FMA).
+4. ✅ **D4 + E1** : roulage automatique à Pau, en ligne droite, puis tout un itinéraire de la place au point d'attente (C172).
+5. **Suite proposée** : le même itinéraire avec le Fenix A320 (train principal en virage, régulation de vitesse d'un jet).
+6. **B5, E2** : autoland et décollage.
+7. Encore ouverts : D5 (autres avions au sol), D6 (clairance BeyondATC), B6 (conditions d'utilisation du Fenix), E4 (licence de Pomax).
 
 À l'issue : fixer le périmètre de la V1 et l'architecture.

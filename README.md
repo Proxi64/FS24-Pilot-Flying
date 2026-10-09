@@ -51,7 +51,8 @@ Today, these people have nothing. Plenty of excellent tools surround the pilot (
 - **Complete airport layouts read from the simulator**: taxiways, hold-short points, parking spots, runways, for about 85,000 airports, payware sceneries included, through the SimConnect Facilities API.
 - **Native SimConnect access from .NET**, proven on MSFS 2024.
 - A detailed review of the **MSFS 2024 SDK** and of the existing tools (MobiFlight WASM module and HubHop, FSUIPC, FS Copilot, node-simconnect…), with their licences.
-- A first test console that reads and checks a complete taxi layout.
+- **Feasibility tests run in the simulator** (October 2026): the aircraft commanded from outside (Cessna 172), the Fenix A320 commanded and read without any add-on, taxi layouts checked against the painted lines.
+- **A first automatic taxi**: a Cessna 172 taxied on its own at Pau, from its stand to the runway hold-short point, following an ATC-style clearance, turns included.
 
 ## Documentation
 
@@ -145,7 +146,8 @@ Aujourd'hui, ils n'ont rien. D'excellents outils entourent le pilote (copilotes 
 - **Les plans complets des aérodromes lus dans le simulateur** (voies de circulation, points d'attente, places, pistes), pour environ 85 000 terrains, scènes payware comprises, grâce à l'API Facilities de SimConnect.
 - **L'accès SimConnect natif depuis .NET**, éprouvé sous MSFS 2024.
 - Une étude détaillée du **SDK MSFS 2024** et des outils existants (module WASM MobiFlight et HubHop, FSUIPC, FS Copilot, node-simconnect…), avec leurs licences.
-- Une première console d'essai qui lit et vérifie un plan de roulage complet.
+- **Des essais de faisabilité menés dans le simulateur** (octobre 2026) : l'avion commandé depuis l'extérieur (Cessna 172), le Fenix A320 commandé et lu sans aucun add-on, les plans de roulage comparés aux lignes peintes.
+- **Un premier roulage automatique** : un Cessna 172 a roulé seul à Pau, de sa place jusqu'au point d'attente de la piste, en suivant une clairance de type ATC, virages compris.
 
 ### Documentation
 

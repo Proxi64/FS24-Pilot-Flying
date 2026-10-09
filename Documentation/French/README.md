@@ -18,7 +18,7 @@ FS24 Pilot Flying veut combler ce manque : une application Windows externe, reli
 |---|---|
 | Phase | **Étude de faisabilité.** Pas encore de code applicatif : on établit d'abord ce qui est possible. |
 | Déjà acquis | Plans d'aérodromes complets lus dans le simulateur (≈ 85 000 terrains, scènes payware comprises), lecture SimConnect native en .NET, doc SDK 2024 analysée pour le roulage |
-| Premier essai | Console de lecture du plan de roulage complet (`Experiments/D2-TaxiLayout`), prête, à valider dans le simulateur |
+| Essais menés (9 octobre 2026) | Six consoles jetables lancées dans MSFS 2024 (`Experiments/`) : plans de roulage comparés aux lignes peintes ; C172 commandé depuis l'extérieur (axes, freins, roulette de nez) ; Fenix A320 commandé et lu en SimConnect natif (FCU, AP1, volets, tiller) ; **premier roulage automatique : un C172 de sa place à Pau jusqu'au point d'attente de la piste 31, en suivant la clairance « C NG NW N5 »**. Détail et points ouverts : [06](06-feasibility.md) |
 | Recherché | Développeurs MSFS intéressés pour construire le projet en commun (voir « Participer ») |
 
 ## Lire la documentation

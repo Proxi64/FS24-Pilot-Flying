@@ -58,6 +58,12 @@ turn in three steps along the apron, C 106 m, NG 111 m, NW 874 m, hold-short poi
 31), 1,290 m in all; this matches the path Hugues drew. Simulated: offset ≤ 0.13 m on straight parts, ≤ 0.41 m in
 turns, stop 4.5 m before the hold-short point.
 
+**Run in MSFS on 9 October 2026** from 8A (the C172 placed 14.6 m ahead of the stand point by GSX): 1,212 m in 8 min 44,
+offset ≤ 0.11 m on straight parts and ≤ 0.76 m in turns, nose wheel up to 17°, stopped 4.8 m before the hold-short
+point; Hugues confirmed every turn and the stop. The stop sequence did not end by itself (the aircraft stopped 0.8 m
+short of the stop point at a near-zero target speed); fixed since (the stop also starts when the target is below
+0.5 kt and the aircraft is stopped), checked in simulation, not re-run in MSFS yet.
+
 ## The law (straight-line mode)
 
 - Point controlled: 2 m ahead of the aircraft reference point (towards the nose wheel).

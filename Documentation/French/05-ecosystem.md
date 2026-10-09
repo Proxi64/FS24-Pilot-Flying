@@ -8,17 +8,23 @@ Ce qu'on a regardé (octobre 2026), ce qu'on peut en tirer et à quelles conditi
 
 Ces outils règlent le **câblage**, c'est-à-dire commander les systèmes d'un avion tiers. Ils ne disent rien du **pilotage** : quand agir, boucles de régulation, roulage, jugement.
 
-### Module WASM MobiFlight + base HubHop — candidat principal
+### Module WASM MobiFlight + base HubHop — essayé, fonctionne, facultatif
 
 - **Licence MIT** (module).
 - Module WASM autonome, placé dans le dossier Community, qui exécute des événements et du code calculateur **dans le contexte des jauges de l'avion** : accès aux LVars et H-events que SimConnect seul ne voit pas.
 - **Plusieurs clients possibles** : un programme externe s'enregistre (`MF.Clients.Add.<Nom>`, réponse `.Finished`) et reçoit ses propres canaux de mémoire partagée (`<Nom>.LVars`, `<Nom>.Command`, `<Nom>.Response`). Il peut donc coexister avec le MobiFlight Connector du joueur.
 - Commandes : `MF.SimVars.Add.(code)` déclare une variable à lire (4 octets par valeur, dans l'ordre d'ajout ; identifiants conseillés à partir de 1000), `MF.SimVars.AddString` (128 octets, 64 chaînes au plus), `MF.SimVars.Set.(code)` pour écrire ou exécuter, `MF.LVars.List`, `MF.Config.MAX_VARS_PER_FRAME.Set`.
-- Les valeurs sont transmises **quand elles changent**, sans fréquence fixe annoncée : à mesurer pour une boucle de pilotage.
-- Pièges : la première commande après le démarrage peut être ignorée (en envoyer une factice) ; liste des LVars plafonnée à 1000 noms.
-- **MSFS 2024** : le README parle de 2020, mais la doc MobiFlight explique comment réactiver le module sous 2024 (le simulateur le désactive parfois). À confirmer par essai.
-- **HubHop** : base communautaire de commandes prêtes à l'emploi, avion par avion (« sortir le train du Fenix »…). Idéal pour écrire les profils d'avion. Licence des données : à vérifier.
+- Les valeurs sont transmises **quand elles changent** ; mesuré dans l'essai C1 : une valeur qui change à chaque image arrive à chaque image (40 par seconde ici), une LVar écrite par le module est relue en 73 ms environ.
+- Pièges : la première commande après le démarrage peut être ignorée (en envoyer une factice) ; liste des LVars plafonnée à 1000 noms (limite écrite en dur dans son code ; sur le PC du mainteneur, d'autres add-ons la remplissent et aucune LVar du Fenix n'y figure).
+- **MSFS 2024** : fonctionne (essai C1, version 1.0.1, la dernière publiée, sur le C172 et le Fenix A320, avec notre propre client enregistré). La doc MobiFlight explique comment réactiver le module si le simulateur le désactive.
+- **HubHop** : base communautaire de commandes prêtes à l'emploi, avion par avion (2 285 presets pour le Fenix). **Aucune licence indiquée** (site et dépôt, vérifié le 9 octobre 2026) : s'en servir comme référence pour les noms de variables, ne pas redistribuer ses données sans demander.
 - https://github.com/MobiFlight/MobiFlight-WASM-Module · https://docs.mobiflight.com/guides/wasm-module/enable-in-msfs2024/ · https://hubhop.mobiflight.com/
+
+### SimConnect natif de MSFS 2024 — suffisant jusqu'ici
+
+- `SimConnect_AddToDataDefinition` accepte les LVars (`L:NOM`, lecture et écriture), et le SDK fournit les **input events**, les variables `B:` des cockpits de MSFS 2024 (`SimConnect_EnumerateInputEvents`, `GetInputEvent`, `SetInputEvent`, `SubscribeInputEvent`). Sources : doc officielle du SDK et `SimConnect.h` ; guide MobiFlight https://docs.mobiflight.com/guides/input-events-2024/.
+- Essais C1 et B1 : plus rapide que par le module (LVar relue en 5 à 19 ms, input event appliqué en 15 à 17 ms) ; le Fenix se commande entièrement par ses LVars (FCU, AP1, volets, beacon, tiller). Le C172 a 233 input events, le Fenix 220 (boîtes audio, boutons du FCU, radio, instruments de secours).
+- Non couvert : les H-events et le code calculateur, qui demandent un module WASM (MobiFlight) si un avion en a besoin.
 
 ### FSUIPC7 — option si le joueur l'a déjà
 
@@ -84,6 +90,8 @@ Aucun ne roule, ne décolle ni n'atterrit : le joueur reste aux commandes.
 ## Outils de développement
 
 - **Serveur MCP « MSFS SDK »** (communautaire, open source) : permet à un assistant IA de chercher dans la doc du SDK. Il lit le site officiel en direct. Sa recherche est approximative et la version visée (2020 ou 2024) n'est pas précisée : on vérifie toujours dans la doc 2024 officielle. https://github.com/90barricade93/MSFS-SDK-MCP
+- **simconnect-mcp** (mrlm-net, version 0.14.2) : serveur MCP qui donne à un assistant IA un accès direct au simulateur en marche (SimVars, événements, données d'aérodromes) ; utilisé pour lire la position de l'avion pendant l'essai E1. **Business Source License**, pas open source : outil de développement seulement, aucun code repris. https://github.com/mrlm-net/simconnect-mcp
+- **GSX** (FSDreamTeam, commercial) et **Navigraph Charts** : leur carte au sol et leurs cartes d'aérodrome ont servi au mainteneur pour vérifier les essais ; GSX lit le même plan Facilities et place l'avion sur sa place.
 - **Wassette** (Microsoft) : moteur de composants WebAssembly pour donner des outils aux agents IA. Sans rapport avec les modules WASM de MSFS (autre format, ne tourne pas dans le simulateur). Écarté.
 
 ## Le projet précédent de l'initiateur
@@ -98,6 +106,9 @@ Générateur de missions pour MSFS 2024 (C# .NET 10, non publié). Réutilisable
   - un plan de vol écrit à la main dans un `.FLT` a fait planter MSFS ;
   - `PLANE TOUCHDOWN *` donne le toucher exact même lu à 1 Hz ;
   - états de caméra : 2 à 8, 24, 26 et 29 = aux commandes ; 34 et 35 = menus ou chargement ;
-  - les fonctions météo de SimConnect sont dépréciées en 2024.
+  - les fonctions météo de SimConnect sont dépréciées en 2024 ;
+  - sa conversion latitude / longitude utilisait une Terre sphérique (111 320 m par degré), fausse d'environ 1,5 m à 1 km du point de référence de l'aérodrome : corrigée ici avec les échelles WGS84 (essais D4, E1).
+
+Ces pièges viennent du projet précédent ; tant qu'un essai de ce projet ne les a pas confirmés, `CLAUDE.md` les marque comme non revérifiés.
 
 Décision : extraire ce code dans une **bibliothèque commune** plutôt que de dépendre de l'ancien projet.

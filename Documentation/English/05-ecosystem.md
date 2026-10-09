@@ -8,17 +8,23 @@ What we looked at (October 2026), what we can take from it and under which condi
 
 These tools solve the **wiring**, that is, commanding the systems of a third-party aircraft. They say nothing about **flying**: when to act, control loops, taxiing, judgement.
 
-### MobiFlight WASM module + HubHop database — main candidate
+### MobiFlight WASM module + HubHop database — tested, works, optional
 
 - **MIT licence** (module).
 - Standalone WASM module, placed in the Community folder, that runs events and calculator code **in the context of the aircraft gauges**: access to LVars and H-events that SimConnect alone cannot see.
 - **Several clients possible**: an external program registers (`MF.Clients.Add.<Name>`, reply `.Finished`) and gets its own shared memory channels (`<Name>.LVars`, `<Name>.Command`, `<Name>.Response`). It can therefore coexist with the user's MobiFlight Connector.
 - Commands: `MF.SimVars.Add.(code)` declares a variable to read (4 bytes per value, in order of addition; IDs recommended from 1000), `MF.SimVars.AddString` (128 bytes, 64 strings max), `MF.SimVars.Set.(code)` to write or execute, `MF.LVars.List`, `MF.Config.MAX_VARS_PER_FRAME.Set`.
-- Values are sent **when they change**, with no stated fixed rate: to be measured for a control loop.
-- Pitfalls: the first command after start-up may be ignored (send a dummy one); the LVar list is capped at 1,000 names.
-- **MSFS 2024**: the README mentions 2020, but the MobiFlight documentation explains how to re-enable the module in 2024 (the simulator sometimes disables it). To be confirmed by test.
-- **HubHop**: community database of ready-to-use controls, aircraft by aircraft ("Fenix gear down"…). Ideal for writing aircraft profiles. Data licence: to be checked.
+- Values are sent **when they change**; measured in test C1: a value changing at every frame arrives at every frame (40 per second here), an LVar written through the module is read back in about 73 ms.
+- Pitfalls: the first command after start-up may be ignored (send a dummy one); the LVar list is capped at 1,000 names (hard limit in its source; on the maintainer's PC other add-ons fill it and no Fenix LVar appears).
+- **MSFS 2024**: works (test C1, version 1.0.1, the latest release, on the C172 and the Fenix A320, with our own registered client). The MobiFlight documentation explains how to re-enable the module if the simulator disables it.
+- **HubHop**: community database of ready-to-use controls, aircraft by aircraft (2,285 presets for the Fenix). **No licence stated** (site and repository, checked 9 October 2026): use it as a reference for variable names, do not redistribute its data without asking.
 - https://github.com/MobiFlight/MobiFlight-WASM-Module · https://docs.mobiflight.com/guides/wasm-module/enable-in-msfs2024/ · https://hubhop.mobiflight.com/
+
+### Native SimConnect in MSFS 2024 — enough so far
+
+- `SimConnect_AddToDataDefinition` accepts LVars (`L:NAME`, read and write), and the SDK provides **input events**, the `B:` variables of MSFS 2024 cockpits (`SimConnect_EnumerateInputEvents`, `GetInputEvent`, `SetInputEvent`, `SubscribeInputEvent`). Sources: official SDK documentation and `SimConnect.h`; MobiFlight guide https://docs.mobiflight.com/guides/input-events-2024/.
+- Tests C1 and B1: faster than through the module (LVar read back in 5 to 19 ms, input event applied in 15 to 17 ms); the Fenix is commanded entirely through its LVars (FCU, AP1, flaps, beacon, tiller). The C172 has 233 input events, the Fenix 220 (audio panels, FCU knobs, radio, standby).
+- Not covered: H-events and calculator code, which need a WASM module (MobiFlight) if an aircraft requires them.
 
 ### FSUIPC7 — option if the user already has it
 
@@ -84,6 +90,8 @@ None of them taxis, takes off or lands: the user stays at the controls.
 ## Development tools
 
 - **"MSFS SDK" MCP server** (community, open source): lets an AI assistant search the SDK documentation. It reads the official site live. Its search is approximate and the targeted version (2020 or 2024) is not stated: we always check against the official 2024 documentation. https://github.com/90barricade93/MSFS-SDK-MCP
+- **simconnect-mcp** (mrlm-net, version 0.14.2): MCP server giving an AI assistant live access to the running simulator (SimVars, events, airport data); used to read the aircraft position during test E1. **Business Source License**, not open source: a development tool only, no code reused. https://github.com/mrlm-net/simconnect-mcp
+- **GSX** (FSDreamTeam, commercial) and **Navigraph Charts**: their ground map and airport charts were used by the maintainer to check the tests; GSX reads the same Facilities layout and places the aircraft on its stand.
 - **Wassette** (Microsoft): WebAssembly component runtime that gives tools to AI agents. Unrelated to MSFS WASM modules (different format, does not run in the simulator). Ruled out.
 
 ## The initiator's previous project
@@ -98,6 +106,9 @@ Mission generator for MSFS 2024 (C# .NET 10, unpublished). Reusable:
   - a flight plan hand-written into a `.FLT` file crashed MSFS;
   - `PLANE TOUCHDOWN *` gives the exact touchdown even when read at 1 Hz;
   - camera states: 2 to 8, 24, 26 and 29 = at the controls; 34 and 35 = menus or loading;
-  - SimConnect weather functions are deprecated in 2024.
+  - SimConnect weather functions are deprecated in 2024;
+  - its latitude / longitude conversion used a spherical Earth (111,320 m per degree), about 1.5 m off 1 km from the airport reference point: corrected here with WGS84 scales (tests D4, E1).
+
+These pitfalls come from the previous project; until a test of this project confirms them, `CLAUDE.md` marks them as not re-verified.
 
 Decision: extract this code into a **shared library** rather than depend on the old project.

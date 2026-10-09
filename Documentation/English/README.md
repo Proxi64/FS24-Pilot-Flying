@@ -18,7 +18,7 @@ FS24 Pilot Flying aims to fill that gap: an external Windows application, connec
 |---|---|
 | Phase | **Feasibility study.** No application code yet: we first establish what is possible. |
 | Already in hand | Complete airport layouts read from the simulator (≈ 85,000 airports, payware sceneries included), native SimConnect access from .NET, SDK 2024 documentation analysed for taxiing |
-| First test | Console that reads the complete taxi layout (`Experiments/D2-TaxiLayout`), ready, to be validated in the simulator |
+| Tests run (9 October 2026) | Six throw-away consoles run in MSFS 2024 (`Experiments/`): taxi layouts checked against the painted lines; the C172 commanded from outside (axes, brakes, nose wheel); the Fenix A320 commanded and read through native SimConnect (FCU, AP1, flaps, tiller); **first automatic taxi: a C172 from its stand at Pau to the runway 31 hold-short point, following the clearance "C NG NW N5"**. Details and open points: [06](06-feasibility.md) |
 | Looking for | MSFS developers interested in building the project together (see "Getting involved") |
 
 ## Reading the documentation

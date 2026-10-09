@@ -17,11 +17,14 @@
 | 09/10/2026 | **Tout le projet en anglais** : code, identifiants, textes, noms de dossiers et de fichiers. Seule exception : la documentation existe aussi en français complet, dans `Documentation/French/`, avec les mêmes noms de fichiers que `Documentation/English/` | Projet ouvert à une communauté internationale |
 | 09/10/2026 | Hébergement sur **GitHub** : https://github.com/Proxi64/FS24-Pilot-Flying | Plateforme habituelle de la communauté MSFS |
 | 09/10/2026 | Wassette écarté | Sans rapport avec les modules WASM de MSFS |
+| 09/10/2026 | Pendant l'étude de faisabilité, **commit sur `main` à chaque étape utile**, sans demander ; le mainteneur fait les push | Phase de collecte d'informations et de documentation |
+
+Les dates sont écrites jour/mois/année.
 
 ## Propositions en attente de validation
 
 - Moteur générique + profils d'avion ouverts ; premier profil **Fenix A320**, deuxième **A320neo d'Asobo**.
-- Accès aux variables des avions tiers par le **module WASM MobiFlight + HubHop** ; FSUIPC seulement en option.
+- Accès aux variables des avions tiers : **SimConnect natif** (LVars et input events, suffisant pour le Fenix dans les essais C1 et B1) ; le **module WASM MobiFlight** seulement pour ce que SimConnect natif ne sait pas faire (H-events, code calculateur) ; HubHop comme référence pour les noms de variables (aucune licence indiquée) ; FSUIPC seulement en option. *(Mis à jour le 9 octobre 2026 après les essais C1 et B1 ; auparavant : module WASM MobiFlight + HubHop.)*
 - Pile : .NET 10, SimConnect natif en P/Invoke, interface WinUI 3 ; module WASM maison seulement si les mesures l'exigent.
 
 ## Questions à décider avec les contributeurs
