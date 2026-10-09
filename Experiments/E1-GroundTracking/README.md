@@ -37,5 +37,4 @@ the C172 built from test A1: nose wheel 20° for a full command, yaw 0.2 s later
 - Emergency stop: Esc, above 10 kt, more than 4 m off the line, more than 25° off its axis, or off the ground. Whatever
   happens, the program ends with idle, full brakes, parking brake and rudder centred.
 
-Run 1 in MSFS 2024 on 9 October 2026 (taxiway NE at LFBP): see the E1 row of `06-feasibility.md`. The capture was
-softened afterwards; run 2 to do.
+Runs 1 and 2 in MSFS 2024 on 9 October 2026 (taxiway NE at LFBP): see the E1 row of `06-feasibility.md`.
