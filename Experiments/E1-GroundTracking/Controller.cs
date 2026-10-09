@@ -91,13 +91,16 @@ internal sealed class Tracker(Line line)
     public const double Kd = 0.3;             // degrees of steer per degree/s of yaw rate
     public const double Ki = 0.5;             // degrees of steer per metre·second of cross-track
     public const double MaxSteer = 20;        // degrees = full rudder (test A1)
+    public const double MaxOffsetTerm = 10;   // degrees: limit of the cross-track term (gentle capture of an offset)
+    public const double MinSpeed = 2;         // m/s used in the cross-track term (it explodes at very low speed)
+    public const double StartSteer = 10;      // degrees: steering limit during the first 3 s of rolling
     public const double MaxSpeed = 10;        // kt: emergency stop above
     public const double MaxCrossTrack = 4;    // m: emergency stop above
     public const double MaxHeadingError = 25; // degrees: emergency stop above
 
     public Line Line => line;
     public string Phase { get; private set; } = "release";
-    private double _phaseStart = double.NaN, _lastT = double.NaN, _integral, _speedIntegral;
+    private double _phaseStart = double.NaN, _lastT = double.NaN, _integral, _speedIntegral, _rollingSince = double.NaN;
 
     public (Command Command, Telemetry Telemetry) Update(State s)
     {
@@ -112,10 +115,15 @@ internal sealed class Tracker(Line line)
         var headingError = ((s.Heading - line.Bearing) % 360 + 540) % 360 - 180;
 
         // Lateral law (also during the stop, so that the aircraft stays straight).
-        var v = Math.Max(s.GroundSpeed * 0.5144, 1);
+        // Test E1 run 1 (09/10/2026): with a 1 m/s floor and no limit, a 1.5 m offset at 0.7 kt gave full lock and
+        // 16° of heading error. The cross-track term is now limited, and so is the steering just after the start.
+        var v = Math.Max(s.GroundSpeed * 0.5144, MinSpeed);
         if (Phase is "track") _integral = Math.Clamp(_integral + xte * dt, -10, 10);
-        var steer = -(headingError + Math.Atan(K * xte / v) * 180 / Math.PI + Ki * _integral) - Kd * s.YawRate;
-        steer = Math.Clamp(steer, -MaxSteer, MaxSteer);
+        if (double.IsNaN(_rollingSince) && s.GroundSpeed >= 0.5) _rollingSince = s.T;
+        var offsetTerm = Math.Clamp(Math.Atan(K * xte / v) * 180 / Math.PI, -MaxOffsetTerm, MaxOffsetTerm);
+        var steer = -(headingError + offsetTerm + Ki * _integral) - Kd * s.YawRate;
+        var limit = double.IsNaN(_rollingSince) || s.T - _rollingSince < 3 ? StartSteer : MaxSteer;
+        steer = Math.Clamp(steer, -limit, limit);
         var rudder = Phase == "release" || s.GroundSpeed < 0.5 ? 0 : -steer / MaxSteer;
 
         Command cmd;

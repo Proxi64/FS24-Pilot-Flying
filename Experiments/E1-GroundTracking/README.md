@@ -30,11 +30,12 @@ the C172 built from test A1: nose wheel 20° for a full command, yaw 0.2 s later
 ## The law
 
 - Point controlled: 2 m ahead of the aircraft reference point (towards the nose wheel).
-- Nose wheel angle = −(heading error + atan(0.6 · offset / speed) + 0.5 · ∫offset) − 0.3 · yaw rate, limited to ±20°
-  (full rudder). The integral term removes the steady offset caused by the drift.
+- Nose wheel angle = −(heading error + atan(0.6 · offset / max(speed, 2 m/s)) + 0.5 · ∫offset) − 0.3 · yaw rate,
+  limited to ±20° (full rudder), the cross-track term to ±10° and the steering to ±10° for the first 3 s of rolling
+  (run 1 captured a 1.5 m offset with full lock at 0.7 kt). The integral term removes the steady offset of the drift.
 - Speed held at 5 kt by the throttle; at idle the C172 already rolls at about 5.7 kt (test A1), so the brakes trim it.
 - Emergency stop: Esc, above 10 kt, more than 4 m off the line, more than 25° off its axis, or off the ground. Whatever
   happens, the program ends with idle, full brakes, parking brake and rudder centred.
 
-Tested on 9 October 2026 outside the simulator only (build + law on the kinematic model: offset RMS 0.05 m): not run in
-MSFS yet.
+Run 1 in MSFS 2024 on 9 October 2026 (taxiway NE at LFBP): see the E1 row of `06-feasibility.md`. The capture was
+softened afterwards; run 2 to do.

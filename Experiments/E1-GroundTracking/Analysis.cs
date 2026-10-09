@@ -52,7 +52,7 @@ internal static class Analysis
         void L(string s = "") => r.AppendLine(s);
         L($"=== Experiment E1 — first automatic taxi (C172, straight centreline) — {source} ===");
         foreach (var n in notes) L("  " + n);
-        L($"Law: steer = −(heading error + atan({Tracker.K} · offset / speed) + {Tracker.Ki} · ∫offset) − {Tracker.Kd} · yaw rate, "
+        L($"Law: steer = −(heading error + atan({Tracker.K} · offset / max(speed, {Tracker.MinSpeed} m/s)) limited to ±{Tracker.MaxOffsetTerm}° + {Tracker.Ki} · ∫offset) − {Tracker.Kd} · yaw rate, ±{Tracker.StartSteer}° during the first 3 s, "
           + $"offset taken {Tracker.Lookahead} m ahead of the reference point; speed held at {Tracker.TargetSpeed} kt.");
         if (frames.Count == 0) { L("No frame recorded."); return r.ToString(); }
 
@@ -94,13 +94,13 @@ internal static class Analysis
     /// <summary>
     /// Simulated run (no MSFS): kinematic model with the C172 values of test A1 (nose wheel angle = −20° × rudder,
     /// reached in about 0.1 s; yaw following 0.2 s later; wheelbase 2.12 m; left drift −0.35°/s), idle already giving 5.7 kt,
-    /// start 0.8 m right of the line and 2° off its axis.
+    /// start 1.5 m left of the line (as in the first run in MSFS), aligned with it.
     /// </summary>
     public static (List<Frame>, List<string>) Simulate()
     {
         var line = new Line(0, 0, 90, 0, 150, "NE (synthetic)", 0);
         var tracker = new Tracker(line);
-        double e = 0, n = -0.8, heading = 92, speed = 0, steerAngle = 0, yawRate = 0;
+        double e = 0, n = 1.5, heading = 90, speed = 0, steerAngle = 0, yawRate = 0; // 1.5 m left of the line, as in run 1
         var frames = new List<Frame>();
         var cmd = Tracker.Safe;
         for (var t = 0.0; t < 120 && tracker.Phase != "done"; t += 0.025)
