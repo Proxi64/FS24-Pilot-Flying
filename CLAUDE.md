@@ -80,3 +80,7 @@ Read first, in this order:
 - SimConnect weather functions are deprecated in MSFS 2024.
 - Third-party aircraft (Fenix, PMDG…) need LVars / H-events: planned access through the MobiFlight WASM module
   (MIT) and HubHop presets; FSUIPC only as an option.
+- MSFS 2024 SimConnect reads/writes LVars natively ("L:NAME" in `SimConnect_AddToDataDefinition`, FLOAT64) and drives
+  cockpit input events (B: vars: `SimConnect_EnumerateInputEvents` / `SetInputEvent` / `SubscribeInputEvent`;
+  RECV ids 34–37). On the 2024 C172, `K:TOGGLE_BEACON_LIGHTS` worked once in four, the input event every time (test C1).
+  The MobiFlight module lists at most 1000 LVars.

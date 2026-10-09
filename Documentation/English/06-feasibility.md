@@ -31,10 +31,10 @@ Status: ✅ confirmed · 🟡 partly · ❓ to be checked · ❌ impossible or d
 
 | # | Question | How to check | Status |
 |---|---|---|---|
-| C1 | Does the MobiFlight WASM module work under MSFS 2024 with a registered third-party client? | Test | ❓ |
+| C1 | Does the MobiFlight WASM module work under MSFS 2024 with a registered third-party client? | Test | 🟡 Yes on the C172 (test C1, 09/10/2026): ping, own client registered in 44 ms, variables read, LVar written. Its LVar list stops at 1000 (hard limit in its source; GSX alone uses 510). Also found: MSFS 2024 SimConnect reads and writes LVars natively and drives the cockpit input events (B: variables) without any module. Remains: the Fenix |
 | C2 | Licences: MobiFlight WASM module, HubHop data, FS Copilot, WASimCommander | Reading the licences | 🟡 MobiFlight module: MIT |
 | C3 | Do we need FSUIPC? (not wanted) | Follows from C1 | ❓ |
-| C4 | Do the values sent "on change" by the MobiFlight module arrive fast enough for a control loop? | Measured during C1 | ❓ |
+| C4 | Do the values sent "on change" by the MobiFlight module arrive fast enough for a control loop? | Measured during C1 | ✅ C172 (test C1): a value changing at every frame arrives 40 times per second (every simulation frame, interval 25 ms, p95 26.3 ms); an LVar written through the module is read back in about 73 ms. Native SimConnect is faster: LVar read back in 5 to 19 ms, input event applied in 15 to 17 ms |
 
 ## D. Airports and taxiing
 
@@ -62,7 +62,7 @@ Status: ✅ confirmed · 🟡 partly · ❓ to be checked · ❌ impossible or d
 |---|---|---|---|
 | D2 — complete taxi layout | `Experiments/D2-TaxiLayout/` | D1, D2, D3, axis convention, network connectivity | Run in MSFS at LFBP, France VFR payware scenery from the Community folder (9 October 2026). Confirmed: element types 2 START and 17 TAXI_NAME, BIAS_X = east / BIAS_Z = north (median 0.4 m against 297 m), network connected to all parking spots and hold-short points. Run again at LFPG, default Asobo scenery (9 October 2026): same conclusions (axes: median 1.3 m against 544 m; 4,313-node main network, 374 parking spots all connected). `WIDTH`, `CENTER_LINE` and `WEIGHT` are transmitted (LFPG: widths 5 to 60 m, painted centreline on 3,252 paths, weight 500,000 lb) but depend on the scenery: LFBP gives 30 m, 0 and 0 everywhere. They cannot be relied on without a fallback |
 | A1 — controlling the aircraft from outside | `Experiments/A1-AxisControl/` | A1, A2, A3, A4 (Cessna 172 at a parking spot, engine off) | Run in MSFS on 9 October 2026 (Asobo C172 at a parking spot, engine off): no SimConnect exception; results in the A1 to A4 rows. Second script `--rolling` run the same day (70 m on a taxiway, no emergency stop): settles A4. Also seen: `PARKING_BRAKE_SET` works both ways; at idle the C172 already rolls at 5.7 kt, so holding 4 kt needs the brakes (useful for E1); brakes at 50 % stop it from 3.5 kt in 1.4 s and 1.4 m |
-| C1 — MobiFlight WASM module | `Experiments/C1-MobiFlight/` | C1, C4 (+ LVar list for B1 to B4), and what native SimConnect does without the module: LVars and input events (B: variables) | Ready (9 October 2026): builds, report checked on synthetic data. To be run on the C172, then on the Fenix |
+| C1 — MobiFlight WASM module | `Experiments/C1-MobiFlight/` | C1, C4 (+ LVar list for B1 to B4), and what native SimConnect does without the module: LVars and input events (B: variables) | Run on the C172 on 9 October 2026 (results in the C1 and C4 rows). Also seen: `K:TOGGLE_BEACON_LIGHTS` worked once out of four times on the 2024 C172, while the input event `LIGHTING_BEACON_1` worked every time with its echo: on MSFS 2024 aircraft, input events are the reliable way to act on the cockpit. The C172 has 233 input events. To be run on the Fenix |
 
 ### What test D2 does
 

@@ -69,7 +69,7 @@ internal static class Analysis
         for (var i = 0; i < toggles.Count; i++)
         {
             var c = toggles[i];
-            var next = i + 1 < toggles.Count ? toggles[i + 1].T : double.MaxValue;
+            var next = i + 1 < toggles.Count ? toggles[i + 1].T : c.T + 1.5;
             double? before = e.LastOrDefault(x => x.Kind == "direct" && x.Name == "LIGHT BEACON" && x.T <= c.T)?.Value;
             var direct = First(x => x.Kind == "direct" && x.Name == "LIGHT BEACON" && x.T > c.T && x.T < next && x.Value != before);
             var viaMf = First(x => x.Kind == "mf" && x.Name == "(A:LIGHT BEACON,Bool)" && x.T > c.T && x.T < next);
