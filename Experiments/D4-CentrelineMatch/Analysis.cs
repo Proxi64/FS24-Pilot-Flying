@@ -86,11 +86,21 @@ internal static class Analysis
         var d = 0.0;
         for (var i = 1; i < f.Count; i++)
         {
-            double dn = (f[i].Lat - f[i - 1].Lat) * 111_320, de = (f[i].Lon - f[i - 1].Lon) * 111_320 * Math.Cos(f[i].Lat * Math.PI / 180);
+            var m = MetresPerDegree(f[i].Lat);
+            double dn = (f[i].Lat - f[i - 1].Lat) * m.Lat, de = (f[i].Lon - f[i - 1].Lon) * m.Lon;
             var step = Math.Sqrt(dn * dn + de * de);
             if (step < 5) d += step; // skip the jumps between separate straight pieces
         }
         return d;
+    }
+
+    /// <summary>Metres per degree of latitude and longitude on the WGS84 ellipsoid at a latitude.</summary>
+    private static (double Lat, double Lon) MetresPerDegree(double lat)
+    {
+        const double a = 6378137, e2 = 0.00669437999014;
+        var phi = lat * Math.PI / 180;
+        var w = 1 - e2 * Math.Sin(phi) * Math.Sin(phi);
+        return (a * (1 - e2) / Math.Pow(w, 1.5) * Math.PI / 180, a / Math.Sqrt(w) * Math.Cos(phi) * Math.PI / 180);
     }
 
     /// <summary>The track (thick red line) and the aircraft network (thin blue lines), for geojson.io.</summary>

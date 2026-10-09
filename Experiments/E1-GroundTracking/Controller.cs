@@ -97,6 +97,7 @@ internal sealed class Tracker(Line line)
     public const double MaxSpeed = 10;        // kt: emergency stop above
     public const double MaxCrossTrack = 4;    // m: emergency stop above
     public const double MaxHeadingError = 25; // degrees: emergency stop above
+    public const double MaxInitialOffset = 0.75; // m: above, the start asks for a confirmation (consistency check)
 
     public Line Line => line;
     public string Phase { get; private set; } = "release";

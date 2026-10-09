@@ -34,6 +34,8 @@ the C172 built from test A1: nose wheel 20° for a full command, yaw 0.2 s later
   limited to ±20° (full rudder), the cross-track term to ±10° and the steering to ±10° for the first 3 s of rolling
   (run 1 captured a 1.5 m offset with full lock at 0.7 kt). The integral term removes the steady offset of the drift.
 - Speed held at 5 kt by the throttle; at idle the C172 already rolls at about 5.7 kt (test A1), so the brakes trim it.
+- Consistency check: before starting, if the measured offset from the line is above 0.75 m, the console warns that
+  the measurement is probably wrong (the aircraft is supposed to be on the yellow line) and waits for Esc or C.
 - Emergency stop: Esc, above 10 kt, more than 4 m off the line, more than 25° off its axis, or off the ground. Whatever
   happens, the program ends with idle, full brakes, parking brake and rudder centred.
 

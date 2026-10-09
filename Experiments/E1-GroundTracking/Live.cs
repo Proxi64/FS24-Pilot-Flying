@@ -103,6 +103,27 @@ internal static unsafe class Live
                        + $"{Tracker.TargetSpeed} kt, then stop. Initial offset {line.CrossTrack(e0, n0):+0.00;-0.00} m.";
             Console.WriteLine(info);
             notes.Add(info);
+            // Consistency check: the aircraft is placed with the nose wheel on the painted line, and the layout matches
+            // the paint within about 0.5 m (test D4). A larger measured offset means a measurement problem (as the
+            // spherical conversion of runs 1 and 2), not an aircraft off the line: do not start silently.
+            var initial = line.CrossTrack(e0, n0);
+            if (Math.Abs(initial) > Tracker.MaxInitialOffset)
+            {
+                Console.WriteLine($"WARNING: initial offset {initial:+0.00;-0.00} m. If the nose wheel is on the yellow line, the measurement is wrong:");
+                Console.WriteLine("Esc and report it. If the aircraft really is off the line, type C to continue.");
+                notes.Add($"Initial offset {initial:+0.00;-0.00} m above {Tracker.MaxInitialOffset} m: confirmation asked");
+                while (true)
+                {
+                    if (Console.KeyAvailable)
+                    {
+                        var k = Console.ReadKey(true).Key;
+                        if (k == ConsoleKey.Escape) { notes.Add("Cancelled after the initial offset warning"); return frames; }
+                        if (k == ConsoleKey.C) { notes.Add("Continued after the initial offset warning"); break; }
+                    }
+                    Pump();
+                    Thread.Sleep(5);
+                }
+            }
             Console.WriteLine("Hands and feet off the controls. Esc = emergency stop (idle, full brakes, parking brake).");
             Console.Write("Enter = start, Esc = cancel: ");
             while (true)

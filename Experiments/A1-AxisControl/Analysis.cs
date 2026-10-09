@@ -232,6 +232,15 @@ internal static class Analysis
         foreach (var note in rec.Notes.Where(n => n.StartsWith("Stopped"))) L("  " + note);
     }
 
+    /// <summary>Metres per degree of latitude and longitude on the WGS84 ellipsoid at a latitude.</summary>
+    private static (double Lat, double Lon) MetresPerDegree(double lat)
+    {
+        const double a = 6378137, e2 = 0.00669437999014;
+        var phi = lat * Math.PI / 180;
+        var w = 1 - e2 * Math.Sin(phi) * Math.Sin(phi);
+        return (a * (1 - e2) / Math.Pow(w, 1.5) * Math.PI / 180, a / Math.Sqrt(w) * Math.Cos(phi) * Math.PI / 180);
+    }
+
     /// <summary>Signed heading change from a to b, in degrees (-180 to 180).</summary>
     private static double Turn(double a, double b) => ((b - a) % 360 + 540) % 360 - 180;
 
@@ -242,8 +251,9 @@ internal static class Analysis
         for (var i = 1; i < v.Count; i++)
         {
             double lat0 = v[i - 1].Meas[Script.MLat], lon0 = v[i - 1].Meas[Script.MLon];
-            double dn = (v[i].Meas[Script.MLat] - lat0) * 111320;
-            double de = (v[i].Meas[Script.MLon] - lon0) * 111320 * Math.Cos(lat0 * Math.PI / 180);
+            var m = MetresPerDegree(lat0);
+            double dn = (v[i].Meas[Script.MLat] - lat0) * m.Lat;
+            double de = (v[i].Meas[Script.MLon] - lon0) * m.Lon;
             if (!double.IsNaN(dn) && !double.IsNaN(de)) d += Math.Sqrt(dn * dn + de * de);
         }
         return d;
