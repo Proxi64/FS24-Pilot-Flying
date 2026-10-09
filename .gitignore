@@ -24,3 +24,8 @@ AppPackages/
 Thumbs.db
 Desktop.ini
 .DS_Store
+
+# Claude Code: personal / machine-specific files (shared rules live in CLAUDE.md and .claude/settings.json)
+CLAUDE.local.md
+.mcp.json
+.claude/settings.local.json

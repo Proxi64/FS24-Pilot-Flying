@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dotnet build:*)", "Bash(dotnet run:*)", "Bash(dotnet restore:*)",
+      "Bash(git status:*)", "Bash(git diff:*)", "Bash(git log:*)",
+      "mcp__msfs-sdk__search_msfs_docs", "mcp__msfs-sdk__get_doc_content",
+      "mcp__msfs-sdk__list_categories", "mcp__msfs-sdk__list_category_items",
+      "mcp__msfs-sdk__natural_language_query"
+    ],
+    "deny": ["Bash(git push:*)"]
+  }
+}

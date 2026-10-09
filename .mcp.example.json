@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "msfs-sdk": {
+      "command": "node",
+      "args": ["<path to>/MSFS-SDK-MCP/dist/index.js"]
+    },
+    "simconnect": {
+      "command": "<path to>/simconnect-mcp.exe",
+      "env": { "MCP_MODE": "simconnect", "DOCS_MSFS_VERSION": "2024" }
+    }
+  }
+}
