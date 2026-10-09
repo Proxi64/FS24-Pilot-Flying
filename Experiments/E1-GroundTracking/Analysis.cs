@@ -68,13 +68,21 @@ internal static class Analysis
         if (settled.Count > 10)
         {
             var x = settled.Select(f => f.Telemetry.CrossTrack).ToList();
-            L($"  Offset (2 m ahead): mean {x.Average():+0.00;-0.00} m, RMS {Rms(x):F2} m, |offset| p95 {Pct(x.Select(Math.Abs), 95):F2} m, max {x.Max(Math.Abs):F2} m");
+            L($"  Offset (2 m ahead): mean {x.Average():+0.00;-0.00;0.00} m, RMS {Rms(x):F2} m, |offset| p95 {Pct(x.Select(Math.Abs), 95):F2} m, max {x.Max(Math.Abs):F2} m");
             var hdg = settled.Select(f => f.Telemetry.HeadingError).ToList();
             L($"  Heading error: mean {hdg.Average():+0.0;-0.0;0.0}°, RMS {Rms(hdg):F1}°, max {hdg.Max(Math.Abs):F1}°");
             var steer = settled.Select(f => f.Telemetry.SteerDeg).ToList();
             L($"  Steer command: mean {steer.Average():+0.0;-0.0;0.0}° (holds the drift), RMS {Rms(steer):F1}°, saturated {100.0 * steer.Count(s => Math.Abs(s) >= Tracker.MaxSteer - 0.01) / steer.Count:F0} % of the time");
-            var crossings = x.Zip(x.Skip(1), (a, b) => Math.Sign(a - x.Average()) != Math.Sign(b - x.Average())).Count(c => c);
-            L($"  Oscillation: offset crosses its mean {crossings} times in {settled[^1].State.T - settled[0].State.T:F0} s");
+            // Swings counted with a ±5 cm band around the mean, so that centimetre noise is not taken for oscillation.
+            var mean = x.Average();
+            int swings = 0, side = 0;
+            foreach (var o in x)
+            {
+                var now = o > mean + 0.05 ? 1 : o < mean - 0.05 ? -1 : 0;
+                if (now != 0 && side != 0 && now != side) swings++;
+                if (now != 0) side = now;
+            }
+            L($"  Oscillation: {swings} swing(s) across the line (beyond ±5 cm of the mean) in {settled[^1].State.T - settled[0].State.T:F0} s");
             var gs = settled.Select(f => f.State.GroundSpeed).ToList();
             L($"  Ground speed {gs.Average():F2} ± {Math.Sqrt(gs.Average(g => (g - gs.Average()) * (g - gs.Average()))):F2} kt, brakes used {100.0 * settled.Count(f => f.Command.Brake > 0) / settled.Count:F0} % of the time");
         }
@@ -83,7 +91,7 @@ internal static class Analysis
         {
             var stopped = stop.FirstOrDefault(f => f.State.GroundSpeed < 0.3);
             L($"  Stop: from {stop[0].State.GroundSpeed:F1} kt, " + (stopped is null ? "not stopped" :
-                $"stopped in {stopped.State.T - stop[0].State.T:F1} s and {stopped.Telemetry.Along - stop[0].Telemetry.Along:F1} m, offset {stopped.Telemetry.CrossTrack:+0.00;-0.00} m"));
+                $"stopped in {stopped.State.T - stop[0].State.T:F1} s and {stopped.Telemetry.Along - stop[0].Telemetry.Along:F1} m, offset {stopped.Telemetry.CrossTrack:+0.00;-0.00;0.00} m"));
         }
         L();
         L("Reading: a stable law keeps the offset within a few decimetres without growing oscillations; a mean steer");

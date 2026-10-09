@@ -41,4 +41,4 @@ the C172 built from test A1: nose wheel 20° for a full command, yaw 0.2 s later
 
 Runs 1 and 2 in MSFS 2024 on 9 October 2026 (taxiway NE at LFBP): see the E1 row of `06-feasibility.md`. They used a
 spherical lat/lon conversion that put the aircraft 1.5 m off the line it was really on; positions are now converted
-with WGS84 scales (`Layout.cs`).
+with WGS84 scales (`Layout.cs`). Run 3 (WGS84): offset RMS 0.01 m, max 0.07 m; the aircraft stayed on the yellow line.
