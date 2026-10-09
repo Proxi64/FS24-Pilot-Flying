@@ -82,6 +82,9 @@ before relying on it. Do not add a fact without a source.
   `w = 1 − e² sin² φ0` (a = 6378137, e² = 0.00669438) [tests D4, E1, GSX ground map]. The sphere `111320` m/degree
   (previous project) gives ~1.5 m of lateral error 1 km from the reference point.
 - Layout centrelines match the painted lines within ~0.5 m at LFBP (France VFR) [test D4].
+- An aircraft on a parking spot is not always on its point: at LFBP 8A (radius 14 m) the C172 stood on the stand axis
+  14.6 m ahead of it, placed by GSX for the nose wheel of a larger aircraft [test E1 route, Hugues]. A stand can have a
+  PARKING path behind the aircraft (pushback) and one ahead [test E1 route, LFBP 8A to 8C].
 - `SimConnect_RequestAllFacilities` (airports) answers with `SIMCONNECT_RECV_AIRPORT_LIST` (message 18) [SDK header],
   entries of 36 bytes: Ident char[9], Region char[3], 3 doubles [SDK header].
 - User aircraft object ID 0: name it `SIMCONNECT_OBJECT_ID_USER_AIRCRAFT`; `SIMCONNECT_OBJECT_ID_USER` (same value) is

@@ -37,20 +37,23 @@ point of the last taxiway of the clearance, which is never entered. It then foll
   integral of the offset for the drift, ±20° (±10° for the first 3 s);
 - speed: 5 kt, 3 kt when the route turns by more than 20° within the next 25 m, then down to a stop 4 m before the
   hold-short point (aircraft reference point);
-- checks before starting: aircraft within 5 m of a parking spot, and the route leaving less than 90° from its heading
-  (otherwise a pushback would be needed: refused);
+- checks before starting: aircraft on the axis of a parking spot (less than 3 m aside) within its circle (radius + 3 m
+  ahead or behind its point), and the route leaving less than 90° from its heading (otherwise a pushback would be
+  needed: refused). The aircraft is not always on the parking point: at LFBP 8A (radius 14 m) GSX placed the C172
+  14.6 m ahead of it, where the nose wheel of a larger aircraft would be (Hugues, 09/10/2026);
 - emergency stop: Esc, above 10 kt, more than 4 m off the route, route lost, **less than 1 m from the hold-short
   point**, or off the ground.
 
 ```
 dotnet run --project Experiments/E1-GroundTracking -- LFBP --route C,NG,NW,N5
 ```
-Simulation (no MSFS): `dotnet run --project Experiments/E1-GroundTracking -- --route-synthetic LFBP 0 C,NG,NW,N5`.
+Simulation (no MSFS): `dotnet run --project Experiments/E1-GroundTracking -- --route-synthetic LFBP 2 14.6 C,NG,NW,N5`
+(parking index, metres ahead of its point, clearance).
 Results: `E1-route-LFBP-<date>-report.txt`, `-frames.csv`, `-notes.txt`, `-track.geojson` (route in blue, track in red).
 
 Only the stand exits **ahead of the aircraft** are used: stands 8A/8B/8C at LFBP have two PARKING paths, one 2.5 to
 15 m behind the aircraft (for a pushback) and one about 17 m ahead; the first version took the shorter one, behind,
-and refused the start. From stand 8A (GATE_A 8, heading 35°, confirmed by Hugues): 17 m ahead, then a 180° right
+and refused the start. From stand 8A (parking index 2 in the data; GATE_A 8, heading 35°, confirmed by Hugues): 17 m ahead, then a 180° right
 turn in three steps along the apron, C 106 m, NG 111 m, NW 874 m, hold-short point 30 (entrance of N5 towards runway
 31), 1,290 m in all; this matches the path Hugues drew. Simulated: offset ≤ 0.13 m on straight parts, ≤ 0.41 m in
 turns, stop 4.5 m before the hold-short point.

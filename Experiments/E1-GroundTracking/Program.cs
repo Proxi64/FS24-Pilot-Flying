@@ -12,7 +12,7 @@
 //        dotnet run -- --line ICAO path along heading  which straight line would be followed from that point
 // Route mode (taxi from the parking spot to a hold-short point, following a clearance):
 //        dotnet run -- ICAO --route C,NG,NW,N5                  run in MSFS, aircraft at a parking spot
-//        dotnet run -- --route-synthetic ICAO parking C,NG,NW,N5   simulate it from that parking spot (no MSFS)
+//        dotnet run -- --route-synthetic ICAO parking [metres ahead] C,NG,NW,N5   simulate it from that parking spot (no MSFS)
 //        dotnet run -- --route-analyse ICAO <frames.csv> C,NG,NW,N5   replay the analysis of a saved route run
 
 using System.Globalization;
@@ -62,7 +62,9 @@ if (args.Length >= 4 && args[0] == "--route-synthetic" || args.Length >= 3 && ar
     }
     if (args[0] == "--route-synthetic")
     {
-        (routeFrames, notes, route) = RouteMode.Simulate(layout, int.Parse(args[2]), clearance);
+        // Optional argument before the clearance: start that many metres ahead of the parking point (LFBP 8A: 14.6 m).
+        var startAhead = args.Length >= 5 && double.TryParse(args[3], NumberStyles.Float, CultureInfo.InvariantCulture, out var a) ? a : 0;
+        (routeFrames, notes, route) = RouteMode.Simulate(layout, int.Parse(args[2]), clearance, startAhead);
         basePath = Path.Combine(folder, $"E1-route-synthetic-{icao}");
     }
     else

@@ -32,8 +32,8 @@ internal sealed class Layout
     public List<Segment> Segments { get; } = [];
     /// <summary>Taxi points: index → position (m) and TAXI_POINT.TYPE.</summary>
     public Dictionary<int, (double E, double N, int Type)> Points { get; } = [];
-    /// <summary>Parking spots: index → position (m) and heading (degrees true).</summary>
-    public Dictionary<int, (double E, double N, double Heading)> Parkings { get; } = [];
+    /// <summary>Parking spots: index → position (m), heading (degrees true) and radius (m).</summary>
+    public Dictionary<int, (double E, double N, double Heading, double Radius)> Parkings { get; } = [];
 
     /// <summary>Hold-short points (TAXI_POINT.TYPE 2, 4, 5 or 6).</summary>
     public bool IsHoldShort(int node) => Points.TryGetValue(node, out var p) && p.Type is 2 or 4 or 5 or 6;
@@ -67,7 +67,8 @@ internal sealed class Layout
         foreach (var p in root.GetProperty("Points").EnumerateArray())
             layout.Points[p.GetProperty("Index").GetInt32()] = (p.GetProperty("X").GetDouble(), p.GetProperty("Z").GetDouble(), p.GetProperty("Type").GetInt32());
         foreach (var p in root.GetProperty("Parkings").EnumerateArray())
-            layout.Parkings[p.GetProperty("Index").GetInt32()] = (p.GetProperty("X").GetDouble(), p.GetProperty("Z").GetDouble(), p.GetProperty("Heading").GetDouble());
+            layout.Parkings[p.GetProperty("Index").GetInt32()] = (p.GetProperty("X").GetDouble(), p.GetProperty("Z").GetDouble(),
+                p.GetProperty("Heading").GetDouble(), p.GetProperty("Radius").GetDouble());
         var names = root.GetProperty("TaxiNames").EnumerateArray()
             .ToDictionary(n => n.GetProperty("Index").GetInt32(), n => n.GetProperty("Name").GetString() ?? "");
         foreach (var p in root.GetProperty("Paths").EnumerateArray())

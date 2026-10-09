@@ -19,7 +19,8 @@ internal static unsafe class RouteMode
     ];
     private static readonly string[] Events = ["AXIS_RUDDER_SET", "THROTTLE1_SET", "AXIS_LEFT_BRAKE_SET", "AXIS_RIGHT_BRAKE_SET", "PARKING_BRAKE_SET"];
     private const uint FirstEvent = 10;
-    public const double MaxParkingDistance = 5;  // m between the aircraft and the parking spot (consistency check)
+    public const double MaxParkingSide = 3;      // m: aircraft off the axis of the parking spot (consistency check)
+    public const double ParkingMargin = 3;       // m beyond the radius of the parking spot, ahead or behind
     public const double MaxStartAngle = 90;      // degrees: beyond, the aircraft would need a pushback
 
     /// <summary>Nearest parking spot, the route from it, and the start checks.</summary>
@@ -27,9 +28,19 @@ internal static unsafe class RouteMode
     {
         refused = "";
         var (parking, pk) = layout.Parkings.MinBy(p => (p.Value.E - e) * (p.Value.E - e) + (p.Value.N - n) * (p.Value.N - n));
-        var d = Math.Sqrt((pk.E - e) * (pk.E - e) + (pk.N - n) * (pk.N - n));
-        notes.Add($"Nearest parking spot: index {parking}, {d:F1} m from the aircraft, heading {pk.Heading:F0}°");
-        if (d > MaxParkingDistance) { refused = $"the aircraft is {d:F0} m from the nearest parking spot (index {parking}): start from a parking spot"; return null; }
+        // The aircraft is not always on the point of its parking spot: at LFBP 8A (radius 14 m) the C172 stood on the
+        // stand axis 14.6 m ahead of it, placed by GSX where the nose wheel of a larger aircraft would be (Hugues,
+        // 09/10/2026). Accepted: on the axis, anywhere within the stand circle plus a margin.
+        var h = pk.Heading * Math.PI / 180;
+        double de = e - pk.E, dn = n - pk.N;
+        double ahead = de * Math.Sin(h) + dn * Math.Cos(h), side = de * Math.Cos(h) - dn * Math.Sin(h);
+        notes.Add($"Nearest parking spot: index {parking}, aircraft {ahead:+0.0;-0.0} m ahead of its point and {side:+0.0;-0.0} m to the right, "
+                  + $"stand heading {pk.Heading:F0}°, radius {pk.Radius:F0} m");
+        if (Math.Abs(side) > MaxParkingSide || Math.Abs(ahead) > pk.Radius + ParkingMargin)
+        {
+            refused = $"the aircraft is not on parking spot {parking} ({ahead:+0;-0} m ahead, {side:+0;-0} m aside, radius {pk.Radius:F0} m): start from a parking spot";
+            return null;
+        }
         var route = Route.Find(layout, parking, clearance, heading, out refused);
         if (route is null) return null;
         notes.Add($"Route ({route.Length:F0} m): {route.Summary}");
@@ -191,17 +202,18 @@ internal static unsafe class RouteMode
     /// Simulated run (no MSFS) from the parking spot, with the kinematic C172 model of Analysis.Simulate (nose wheel
     /// −20° × rudder in 0.1 s, yaw 0.2 s later, wheelbase 2.12 m, left drift −0.35°/s, idle giving 5.7 kt).
     /// </summary>
-    public static (List<RouteFrame>, List<string>, Route?) Simulate(Layout layout, int parking, string[] clearance)
+    public static (List<RouteFrame>, List<string>, Route?) Simulate(Layout layout, int parking, string[] clearance, double startAhead = 0)
     {
-        var notes = new List<string> { "SIMULATED RUN (kinematic model, not MSFS)" };
-        var pk = layout.Parkings[parking];
+        var notes = new List<string> { $"SIMULATED RUN (kinematic model, not MSFS), start {startAhead:F1} m ahead of the parking point" };
+        var pk0 = layout.Parkings[parking];
+        var pk = (E: pk0.E + startAhead * Math.Sin(pk0.Heading * Math.PI / 180), N: pk0.N + startAhead * Math.Cos(pk0.Heading * Math.PI / 180), pk0.Heading);
         var heading = pk.Heading;
         var route = Prepare(layout, pk.E, pk.N, heading, clearance, notes, out var refused);
         if (route is null && Route.Find(layout, parking, clearance, double.NaN, out _) is { } r)
         {
             // The stand heading would need a pushback: simulate the law with the aircraft already facing the route.
             heading = r.BearingAt(Follower.MinLookahead);
-            notes.Add($"Simulation started facing the route (heading {heading:F0}°) instead of the stand heading {pk.Heading:F0}°: {refused}");
+            notes.Add($"Simulation started facing the route (heading {heading:F0}°) instead of the stand heading {pk0.Heading:F0}°: {refused}");
             route = Prepare(layout, pk.E, pk.N, heading, clearance, notes, out refused);
         }
         if (route is null) { notes.Add("Refused: " + refused); return ([], notes, null); }
