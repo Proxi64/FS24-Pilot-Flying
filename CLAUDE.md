@@ -13,6 +13,10 @@ MSFS 2020, which no longer exists in MSFS 2024 and is especially missed by simme
 documentation reading and small throw-away experiments. **No tests on add-ons for now** (Fenix, PMDG…, add-on
 ATC): tests use the default MSFS 2024 aircraft and features only (decision of 10/10/2026).
 
+**Single objective (10/10/2026): fly autonomously a Cirrus SF50 Vision Jet (default aircraft) from LFBO stand F10,
+engine off, to LFBZ stand 5, engine shut down.** The plan is section G and the "Proposed order" of
+`06-feasibility.md`. Both airports are Flightbeam payware sceneries on Hugues's PC.
+
 Read first, in this order:
 1. `README.md` (overview)
 2. `Documentation/English/06-feasibility.md` (open questions, their status, the experiments)

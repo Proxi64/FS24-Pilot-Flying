@@ -56,6 +56,10 @@ These tools, and what we can reuse from them, are detailed in [05 — Ecosystem]
 
 Consequence: **reliability** comes before realism. Part of the audience cannot take over if something goes wrong.
 
+## Current objective (decision of 10 October 2026)
+
+One complete flight, flown autonomously: **Cirrus SF50 Vision Jet** (default MSFS 2024 aircraft), from **Toulouse-Blagnac (LFBO), stand F10, engine off**, to **Biarritz (LFBZ), stand 5, engine shut down**. The feasibility study is organised around this flight (see [06](06-feasibility.md)); the scope below remains a proposal for afterwards.
+
 ## Planned scope (proposal, to be validated with contributors)
 
 | Step | Content | Aircraft |

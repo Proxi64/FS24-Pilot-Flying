@@ -6,7 +6,11 @@
 
 Status: ✅ confirmed · 🟡 partly · ❓ to be checked · ❌ impossible or dropped · ⏸ postponed.
 
-**No tests on add-ons for now** (decision of 10 October 2026): the study goes on with the default MSFS 2024 aircraft (C172, Asobo A320neo). Sections B and C, run on 9 October 2026, are kept but not pursued.
+## Objective (decision of 10 October 2026)
+
+**Fly autonomously one flight: Cirrus SF50 Vision Jet (default MSFS 2024 aircraft), from LFBO (Toulouse-Blagnac), stand F10, engine off, to LFBZ (Biarritz), stand 5, engine shut down.** The questions of this flight are in section G; the proposed order at the end follows it. Both airports are Flightbeam payware sceneries on the maintainer's PC (Community folder, active).
+
+**No tests on add-ons for now** (decision of 10 October 2026): no third-party aircraft. Sections B and C, run on 9 October 2026, are kept but not pursued; section F (A320neo) is postponed by the single objective.
 
 ## A. Controlling the aircraft from outside
 
@@ -58,7 +62,7 @@ Status: ✅ confirmed · 🟡 partly · ❓ to be checked · ❌ impossible or d
 | E3 | Do we need a WASM module for latency? | Follows from A3, E1, E2 | 🟡 Not for taxiing: test E1 taxied a whole route from the application (commands at 30 Hz, positions at about 40 Hz). Takeoff and flare (E2) remain to be measured (good sign: Pomax takes off and lands light aircraft from outside, under MSFS 2020) |
 | E4 | Under which licence is Pomax's tutorial code? | Reading the repository | ❓ |
 
-## F. Default airliner: Asobo A320neo (MSFS 2024)
+## F. Default airliner: Asobo A320neo (MSFS 2024) — ⏸ postponed (single objective, 10/10/2026)
 
 The airliner questions of section B, asked again on the simulator's own A320neo (no add-on).
 
@@ -67,7 +71,23 @@ The airliner questions of section B, asked again on the simulator's own A320neo 
 | F1 | Does the A320neo accept the standard axes (sidestick, rudder, brakes, thrust levers) and the tiller, and where is idle? | Test A1 on the A320neo | ❓ |
 | F2 | Can we command the FCU (speed, heading, altitude, V/S, AP1/2, A/THR, LOC, APPR), flaps, gear, spoilers and autobrake: standard events, input events or LVars? | Input event list (as in test C1) + test | ❓ |
 | F3 | Does the A320neo autoland (flare, rollout) on ILS when our program arms it? | Manual test flight, then automated | ❓ |
-| F4 | Can we read the state: FMA modes, flight phase, warnings? | SimVars, LVars, input events + test | ❓ |
+| F4 | Can we read the state: FMA modes, flight phase, warnings? | SimVars, LVars, input events + test | ⏸ |
+
+## G. The objective flight: SF50, LFBO stand F10 → LFBZ stand 5
+
+One question per phase of the flight, from the stand with the engine off to the stand with the engine shut down.
+
+| # | Question | How to check | Status |
+|---|---|---|---|
+| G1 | Do the LFBO and LFBZ layouts (Flightbeam) contain stand F10 and stand 5 (name, number, suffix), the runways with their ILS, and hold-short points, all connected? | Test D2 on LFBO and LFBZ, adding the parking `SUFFIX` | ❓ |
+| G2 | Can the program start the SF50's engine from "engine off" and shut it down on arrival (battery, fuel, avionics, starter)? | SDK events + the SF50's input event list (as in test C1) + test | ❓ |
+| G3 | How does the SF50 steer on the ground (rudder on the nose wheel, or free nose wheel + differential braking)? Do axes, brakes and throttle respond as on the C172? | Test A1 on the SF50 | ❓ |
+| G4 | Taxi out and in: route from stand F10 to the departure runway hold-short point (runway chosen from the wind, no ATC), and from the LFBZ runway exit to stand 5 | E1 route mode, without clearance | ❓ |
+| G5 | Takeoff: centreline tracking, rotation at Vr, climb to the autopilot engagement height | Test (E2 on the SF50) | ❓ |
+| G6 | Climb, cruise, descent: can the G3000 autopilot fly LFBO → LFBZ, with a flight plan loaded in it or with its modes (HDG, ALT, VS, autothrottle) commanded by our program? | SDK + input events + test | ❓ |
+| G7 | Approach and landing at LFBZ: ILS approach with the autopilot, then flare, touchdown and braking, by the aircraft (does the MSFS 2024 SF50 offer an autoland?) or by our program? | SDK, aircraft documentation, test | ❓ |
+| G8 | Runway exit at LFBZ, entry onto stand 5 (direction, stop position), parking brake, engine shutdown | Test | ❓ |
+| G9 | Supervision: rejected takeoff, go-around, what to do when a step fails | Design + tests | ❓ |
 
 ## Tests
 
@@ -97,9 +117,15 @@ It reads the complete layout of one airport, with every field useful for taxiing
 2. ✅ **A1 to A4** on an Asobo aircraft: a console that reads the state and sends axes (A1 and A2 to complete in flight).
 3. ✅ **C1**, then 🟡 **B1 to B4** on the Fenix (9 October 2026; not pursued: no add-on tests for now, decision of 10 October 2026).
 4. ✅ **D4 + E1**: automatic taxi at Pau, a straight line, then a whole route from the stand to the hold-short point (C172).
-5. **Next, proposed**: **F1** (controls of the default A320neo), then **E1 with the A320neo** on the same route (taxiing a jet: main gear in turns, speed control).
-6. **F2 to F4**, then **F3 + E2**: autoland and takeoff on the A320neo.
-7. Still open: D5 (other aircraft on the ground: AI traffic of the simulator), E4 (Pomax licence).
-8. ⏸ Postponed with the add-on tests: B5 to B7, C2 and C3, D6 (BeyondATC).
+Towards the objective flight (section G), proposed:
+
+5. **G1**: LFBO and LFBZ layouts read (test D2), stands F10 and 5, runways, ILS and hold-short points found (main menu, no risk).
+6. **G3**, and the reading part of **G2**: the SF50 on stand F10, engine off: controls, ground steering, list of its input events (start and shutdown controls).
+7. **G4**: automatic taxi of the SF50 at LFBO, from stand F10 to the departure runway hold-short point.
+8. **G2**: automatic engine start and shutdown.
+9. **G5** takeoff, **G6** cruise, **G7** approach and landing, **G4 + G8** taxi in and stop on stand 5; **G9** throughout.
+10. The whole flight in one run.
+
+Still open, outside the objective: D5 (other aircraft on the ground), E4 (Pomax licence). ⏸ Postponed: B5 to B7, C2 and C3, D6 (BeyondATC), section F (A320neo).
 
 Afterwards: set the V1 scope and the architecture.

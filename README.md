@@ -37,6 +37,10 @@ Today, these people have nothing. Plenty of excellent tools surround the pilot (
 - **Complementary**, not competing: FS24 Pilot Flying flies, while your favourite crew copilot makes the callouts and your favourite ATC handles the radio.
 - **PC only**: an external application cannot run on Xbox or PlayStation.
 
+### Current objective
+
+Fly autonomously one complete flight: a **Cirrus SF50 Vision Jet** from **Toulouse-Blagnac (LFBO), stand F10, engine off**, to **Biarritz (LFBZ), stand 5, engine shut down** (decision of 10 October 2026).
+
 ### Planned steps (subject to the feasibility study)
 
 | Step | Content |
@@ -131,6 +135,10 @@ Aujourd'hui, ils n'ont rien. D'excellents outils entourent le pilote (copilotes 
 - **Des profils d'avion ouverts** : un moteur générique et de petits fichiers de description, un par avion, que la communauté peut écrire et partager, plutôt qu'un produit payant par avion.
 - **Complémentaire**, pas concurrent : FS24 Pilot Flying pilote, votre copilote d'équipage préféré fait les annonces et votre ATC préféré gère la radio.
 - **PC uniquement** : une application externe ne peut pas tourner sur Xbox ou PlayStation.
+
+#### Objectif en cours
+
+Réussir de façon autonome un vol complet : un **Cirrus SF50 Vision Jet** de **Toulouse-Blagnac (LFBO), place F10, moteur éteint**, à **Biarritz (LFBZ), place 5, moteur coupé** (décision du 10 octobre 2026).
 
 #### Étapes envisagées (selon les résultats de l'étude de faisabilité)
 

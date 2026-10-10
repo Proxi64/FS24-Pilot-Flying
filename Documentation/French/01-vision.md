@@ -56,6 +56,10 @@ Le détail de ces outils, et ce qu'on peut en réutiliser, se trouve dans [05 �
 
 Conséquence : la **fiabilité** passe avant le réalisme. Une partie du public ne peut pas reprendre la main si quelque chose se passe mal.
 
+## Objectif en cours (décision du 10 octobre 2026)
+
+Un vol complet, réussi de façon autonome : **Cirrus SF50 Vision Jet** (avion par défaut de MSFS 2024), de **Toulouse-Blagnac (LFBO), place F10, moteur éteint**, à **Biarritz (LFBZ), place 5, moteur coupé**. L'étude de faisabilité s'organise autour de ce vol (voir [06](06-feasibility.md)) ; le périmètre ci-dessous reste une proposition pour la suite.
+
 ## Périmètre envisagé (proposition, à valider avec les contributeurs)
 
 | Étape | Contenu | Avions |

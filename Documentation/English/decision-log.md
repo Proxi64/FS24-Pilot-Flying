@@ -19,12 +19,13 @@
 | 09/10/2026 | Wassette ruled out | Unrelated to MSFS WASM modules |
 | 09/10/2026 | During the feasibility study, **commit on `main` at each useful step**, without asking; the maintainer pushes | Phase of information gathering and documentation |
 | 10/10/2026 | **No tests on add-ons for now** (third-party aircraft such as the Fenix A320): the feasibility study goes on with the default MSFS 2024 aircraft | Far too early: the bases (taxi, takeoff, landing) must first be established on the simulator's own aircraft. The add-on results of 9 October 2026 are kept |
+| 10/10/2026 | **Single objective**: fly autonomously the following flight: **Cirrus SF50 Vision Jet**, from **LFBO (Toulouse-Blagnac), stand F10, engine off**, to **LFBZ (Biarritz), stand 5, engine shut down**. The feasibility study is organised around this flight; the A320neo questions (section F) are postponed | Focus on one complete, concrete flight that proves the concept end to end |
 
 Dates are written day/month/year.
 
 ## Proposals awaiting validation
 
-- Generic engine + open aircraft profiles; first profiles on **default MSFS 2024 aircraft** (Asobo A320neo for the airliner phases, C172 for tests and general aviation); add-on profiles (Fenix A320…) later. *(Updated on 10 October 2026 after the decision on add-ons; previously: first profile Fenix A320, second Asobo A320neo.)*
+- Generic engine + open aircraft profiles; first profile: the **SF50 Vision Jet** (current objective), then other default MSFS 2024 aircraft; add-on profiles (Fenix A320…) later. *(Updated on 10 October 2026 after the decisions on add-ons and on the single objective; previously: first profile Fenix A320, second Asobo A320neo.)*
 - Access to third-party aircraft variables: **native SimConnect** (LVars and input events, enough for the Fenix in tests C1 and B1); the **MobiFlight WASM module** only for what native SimConnect cannot do (H-events, calculator code); HubHop as a reference for variable names (no licence stated); FSUIPC only as an option. *(Updated on 9 October 2026 after tests C1 and B1; previously: MobiFlight WASM module + HubHop. Postponed with the add-on tests, decision of 10 October 2026.)*
 - Stack: .NET 10, native SimConnect through P/Invoke, WinUI 3 user interface; our own WASM module only if measurements require it.
 

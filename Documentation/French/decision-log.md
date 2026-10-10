@@ -19,12 +19,13 @@
 | 09/10/2026 | Wassette écarté | Sans rapport avec les modules WASM de MSFS |
 | 09/10/2026 | Pendant l'étude de faisabilité, **commit sur `main` à chaque étape utile**, sans demander ; le mainteneur fait les push | Phase de collecte d'informations et de documentation |
 | 10/10/2026 | **Pas d'essais sur les add-ons pour l'instant** (avions tiers comme le Fenix A320) : l'étude de faisabilité continue avec les avions par défaut de MSFS 2024 | Bien trop prématuré : il faut d'abord établir les bases (roulage, décollage, atterrissage) sur les avions du simulateur. Les résultats sur add-ons du 9 octobre 2026 sont conservés |
+| 10/10/2026 | **Un seul objectif** : réussir de façon autonome le vol suivant : **Cirrus SF50 Vision Jet**, de **LFBO (Toulouse-Blagnac), place F10, moteur éteint**, à **LFBZ (Biarritz), place 5, moteur coupé**. L'étude de faisabilité s'organise autour de ce vol ; les questions sur l'A320neo (section F) sont reportées | Se concentrer sur un vol complet et concret qui prouve le concept de bout en bout |
 
 Les dates sont écrites jour/mois/année.
 
 ## Propositions en attente de validation
 
-- Moteur générique + profils d'avion ouverts ; premiers profils sur les **avions par défaut de MSFS 2024** (A320neo d'Asobo pour les phases d'avion de ligne, C172 pour les essais et l'aviation générale) ; profils d'add-ons (Fenix A320…) plus tard. *(Mis à jour le 10 octobre 2026 après la décision sur les add-ons ; auparavant : premier profil Fenix A320, deuxième A320neo d'Asobo.)*
+- Moteur générique + profils d'avion ouverts ; premier profil : le **SF50 Vision Jet** (objectif en cours), puis d'autres avions par défaut de MSFS 2024 ; profils d'add-ons (Fenix A320…) plus tard. *(Mis à jour le 10 octobre 2026 après les décisions sur les add-ons et sur l'objectif unique ; auparavant : premier profil Fenix A320, deuxième A320neo d'Asobo.)*
 - Accès aux variables des avions tiers : **SimConnect natif** (LVars et input events, suffisant pour le Fenix dans les essais C1 et B1) ; le **module WASM MobiFlight** seulement pour ce que SimConnect natif ne sait pas faire (H-events, code calculateur) ; HubHop comme référence pour les noms de variables (aucune licence indiquée) ; FSUIPC seulement en option. *(Mis à jour le 9 octobre 2026 après les essais C1 et B1 ; auparavant : module WASM MobiFlight + HubHop. Reporté avec les essais sur add-ons, décision du 10 octobre 2026.)*
 - Pile : .NET 10, SimConnect natif en P/Invoke, interface WinUI 3 ; module WASM maison seulement si les mesures l'exigent.
 

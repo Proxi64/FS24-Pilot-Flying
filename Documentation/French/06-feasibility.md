@@ -6,7 +6,11 @@
 
 Statuts : ✅ confirmé · 🟡 en partie · ❓ à vérifier · ❌ impossible ou abandonné · ⏸ reporté.
 
-**Pas d'essais sur les add-ons pour l'instant** (décision du 10 octobre 2026) : l'étude continue avec les avions par défaut de MSFS 2024 (C172, A320neo d'Asobo). Les sections B et C, menées le 9 octobre 2026, sont conservées mais pas poursuivies.
+## Objectif (décision du 10 octobre 2026)
+
+**Réussir de façon autonome un vol : Cirrus SF50 Vision Jet (avion par défaut de MSFS 2024), de LFBO (Toulouse-Blagnac), place F10, moteur éteint, à LFBZ (Biarritz), place 5, moteur coupé.** Les questions de ce vol sont dans la section G ; l'ordre proposé à la fin le suit. Les deux aérodromes sont des scènes payware Flightbeam sur le PC du mainteneur (dossier Community, actives).
+
+**Pas d'essais sur les add-ons pour l'instant** (décision du 10 octobre 2026) : pas d'avion tiers. Les sections B et C, menées le 9 octobre 2026, sont conservées mais pas poursuivies ; la section F (A320neo) est reportée par l'objectif unique.
 
 ## A. Commander l'avion depuis l'extérieur
 
@@ -58,7 +62,7 @@ Statuts : ✅ confirmé · 🟡 en partie · ❓ à vérifier · ❌ impossible 
 | E3 | Faut-il un module WASM pour la latence ? | Découle de A3, E1, E2 | 🟡 Pas pour le roulage : l'essai E1 a roulé tout un itinéraire depuis l'application (commandes à 30 Hz, positions à environ 40 Hz). Décollage et arrondi (E2) restent à mesurer (indice favorable : Pomax décolle et atterrit des avions légers depuis l'extérieur, sous MSFS 2020) |
 | E4 | Sous quelle licence est le code du tutoriel de Pomax ? | Lecture du dépôt | ❓ |
 
-## F. Avion de ligne par défaut : A320neo d'Asobo (MSFS 2024)
+## F. Avion de ligne par défaut : A320neo d'Asobo (MSFS 2024) — ⏸ reporté (objectif unique, 10/10/2026)
 
 Les questions « avion de ligne » de la section B, posées à nouveau sur l'A320neo du simulateur (sans add-on).
 
@@ -67,7 +71,23 @@ Les questions « avion de ligne » de la section B, posées à nouveau sur l'A32
 | F1 | L'A320neo accepte-t-il les axes standard (mini-manche, palonnier, freins, manettes) et le tiller, et où est le ralenti ? | Essai A1 sur l'A320neo | ❓ |
 | F2 | Peut-on commander le FCU (vitesse, cap, altitude, V/S, AP1/2, A/THR, LOC, APPR), les volets, le train, les spoilers et l'autobrake : événements standard, input events ou LVars ? | Liste des input events (comme dans l'essai C1) + essai | ❓ |
 | F3 | L'A320neo fait-il l'autoland (arrondi, roulement) sur ILS quand c'est notre programme qui l'arme ? | Vol d'essai manuel, puis piloté | ❓ |
-| F4 | Peut-on lire l'état : modes FMA, phase du vol, alarmes ? | SimVars, LVars, input events + essai | ❓ |
+| F4 | Peut-on lire l'état : modes FMA, phase du vol, alarmes ? | SimVars, LVars, input events + essai | ⏸ |
+
+## G. Le vol objectif : SF50, LFBO place F10 → LFBZ place 5
+
+Une question par phase du vol, de la place moteur éteint à la place moteur coupé.
+
+| # | Question | Comment vérifier | Statut |
+|---|---|---|---|
+| G1 | Les plans de LFBO et LFBZ (Flightbeam) contiennent-ils la place F10 et la place 5 (nom, numéro, suffixe), les pistes avec leur ILS, et des points d'attente, le tout relié ? | Essai D2 sur LFBO et LFBZ, en ajoutant le `SUFFIX` des places | ❓ |
+| G2 | Le programme peut-il démarrer le moteur du SF50 depuis « moteur éteint » et le couper à l'arrivée (batterie, carburant, avionique, démarreur) ? | Événements du SDK + liste des input events du SF50 (comme dans l'essai C1) + essai | ❓ |
+| G3 | Comment le SF50 se dirige-t-il au sol (palonnier sur la roulette de nez, ou roulette libre + freinage différentiel) ? Les axes, les freins et les gaz répondent-ils comme sur le C172 ? | Essai A1 sur le SF50 | ❓ |
+| G4 | Roulage aller et retour : itinéraire de la place F10 au point d'attente de la piste de départ (piste choisie selon le vent, sans ATC), et de la sortie de piste de LFBZ à la place 5 | Mode itinéraire de E1, sans clairance | ❓ |
+| G5 | Décollage : tenue d'axe, rotation à Vr, montée jusqu'à la hauteur d'engagement du pilote automatique | Essai (E2 sur le SF50) | ❓ |
+| G6 | Montée, croisière, descente : le pilote automatique G3000 peut-il voler LFBO → LFBZ, avec un plan de vol chargé dedans ou avec ses modes (HDG, ALT, VS, autopoussée) commandés par notre programme ? | SDK + input events + essai | ❓ |
+| G7 | Approche et atterrissage à LFBZ : approche ILS au pilote automatique, puis arrondi, toucher et freinage, par l'avion (le SF50 de MSFS 2024 propose-t-il un autoland ?) ou par notre programme ? | SDK, documentation de l'avion, essai | ❓ |
+| G8 | Sortie de piste à LFBZ, entrée sur la place 5 (sens, position d'arrêt), frein de parc, arrêt du moteur | Essai | ❓ |
+| G9 | Supervision : décollage interrompu, remise de gaz, conduite à tenir si une étape échoue | Conception + essais | ❓ |
 
 ## Essais
 
@@ -97,9 +117,15 @@ Il lit le plan complet d'un aérodrome, avec tous les champs utiles au roulage (
 2. ✅ **A1 à A4** sur un avion d'Asobo : une console qui lit l'état et envoie des axes (A1 et A2 à compléter en vol).
 3. ✅ **C1**, puis 🟡 **B1 à B4** sur le Fenix (9 octobre 2026 ; pas poursuivi : pas d'essais sur les add-ons pour l'instant, décision du 10 octobre 2026).
 4. ✅ **D4 + E1** : roulage automatique à Pau, en ligne droite, puis tout un itinéraire de la place au point d'attente (C172).
-5. **Suite proposée** : **F1** (commandes de l'A320neo par défaut), puis **E1 avec l'A320neo** sur le même itinéraire (rouler un jet : train principal en virage, régulation de vitesse).
-6. **F2 à F4**, puis **F3 + E2** : autoland et décollage sur l'A320neo.
-7. Encore ouverts : D5 (autres avions au sol : trafic IA du simulateur), E4 (licence de Pomax).
-8. ⏸ Reportés avec les essais sur add-ons : B5 à B7, C2 et C3, D6 (BeyondATC).
+Vers le vol objectif (section G), proposé :
+
+5. **G1** : plans de LFBO et LFBZ lus (essai D2), places F10 et 5, pistes, ILS et points d'attente trouvés (menu principal, sans risque).
+6. **G3**, et la partie lecture de **G2** : le SF50 sur la place F10, moteur éteint : commandes, direction au sol, liste de ses input events (commandes de démarrage et d'arrêt).
+7. **G4** : roulage automatique du SF50 à LFBO, de la place F10 au point d'attente de la piste de départ.
+8. **G2** : démarrage et arrêt automatiques du moteur.
+9. **G5** décollage, **G6** croisière, **G7** approche et atterrissage, **G4 + G8** roulage retour et arrêt sur la place 5 ; **G9** tout du long.
+10. Le vol complet d'une traite.
+
+Encore ouverts, hors objectif : D5 (autres avions au sol), E4 (licence de Pomax). ⏸ Reportés : B5 à B7, C2 et C3, D6 (BeyondATC), section F (A320neo).
 
 À l'issue : fixer le périmètre de la V1 et l'architecture.
