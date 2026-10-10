@@ -3,8 +3,12 @@
 Throw-away console of the feasibility study (see `Documentation/English/06-feasibility.md`, questions C1 and C4;
 French: `Documentation/French/06-feasibility.md`).
 
+> **Postponed**: no tests on add-ons for now (decision of 10 October 2026). The results of 9 October 2026 are kept;
+> the native input event list (step 9) will serve again for the default A320neo (question F2).
+
 Third-party aircraft (Fenix, PMDG…) keep their state in local variables (LVars) and react to their own events, which
-SimConnect cannot reach directly. The MobiFlight WASM module (https://github.com/MobiFlight/MobiFlight-WASM-Module,
+were thought out of reach of SimConnect alone (this test showed that MSFS 2024 SimConnect reads and writes LVars
+natively, step 8). The MobiFlight WASM module (https://github.com/MobiFlight/MobiFlight-WASM-Module,
 MIT) runs inside MSFS and executes calculator code for external clients. This console uses its protocol (ideas only,
 no code copied): it registers its own client, `FS24PilotFlying`, reads variables, writes an LVar, runs an event and
 lists the aircraft's LVars.

@@ -6,12 +6,12 @@ A virtual pilot has to replace the pilot's **hands, eyes and judgement**, on ver
 
 ## 1. A flight is six problems
 
-| Phase | What the aircraft can already do | Difficulty | Fenix A320 case |
+| Phase | What the aircraft can already do | Difficulty | Airliner case (A320) |
 |---|---|---|---|
 | Climb, cruise, descent | Autopilot (AP) | Low | Managed flight by the FMS |
 | Top of descent | Nothing on most light aircraft | Medium | Computed by the FMS |
 | Approach | APPR / ILS mode if available | Medium | APPR + both APs |
-| Landing (flare, touchdown) | No autoland on the vast majority of aircraft | **High** | **ILS autoland**: flare and rollout done by the aircraft |
+| Landing (flare, touchdown) | No autoland on the vast majority of aircraft | **High** | **ILS autoland**: flare and rollout done by the aircraft (Fenix; to be checked on the default A320neo, question F3) |
 | Takeoff | Nothing: centreline tracking, rotation | Medium to high | No automatic takeoff on Airbus: to be done until AP engagement (around 100 ft) |
 | Taxi | Nothing | Medium thanks to the airport layouts (see [04](04-airports-and-taxiing.md)) | Steering (tiller), brakes |
 

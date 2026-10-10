@@ -3,6 +3,8 @@
 Throw-away console of the feasibility study (see `Documentation/English/06-feasibility.md`, questions B1 to B4;
 French: `Documentation/French/06-feasibility.md`).
 
+> **Postponed**: no tests on add-ons for now (decision of 10 October 2026). The results of 9 October 2026 are kept.
+
 Experiment C1 showed that MSFS 2024 SimConnect reads and writes LVars natively, and that the Fenix keeps its switches
 and annunciators in plain LVars. This console uses **native SimConnect only** (LVars, key events, input events; no
 WASM module) to act on the Fenix cockpit and log every watched variable that reacts. LVar names come from the HubHop

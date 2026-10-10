@@ -81,9 +81,9 @@ None of them taxis, takes off or lands: the user stays at the controls.
 | MSFS-Tools (mpaperno) | C++, mostly GPL v3 | **DocImport**: structured database of all events, SimVars and units extracted from the SDK docs (useful to validate profiles). **SimConnect-Request-Tracker**: links a SimConnect error to the faulty call. GPL code, incompatible with the project's MIT licence: we take ideas, not code. https://github.com/mpaperno/MSFS-Tools |
 | simconnect-sdk-rs | Rust, MIT | Archived in February 2026. Ruled out. https://github.com/mihai-dinculescu/simconnect-sdk-rs |
 
-## Reference aircraft: Fenix A320
+## Fenix A320 (add-on, postponed)
 
-- ILS autoland (flare + rollout), autothrust, managed flight: the best candidate for a first complete version.
+- ILS autoland (flare + rollout), autothrust, managed flight: a strong candidate once add-ons are back in the plan (no add-on tests for now, decision of 10 October 2026; the first version targets the default A320neo).
 - Installed components: FenixSystem, FenixDisplay, **Fenix.GqlGateway**. The latter suggests a data interface (GraphQL?) worth exploring. We will also need to **check Fenix's terms of use** for a third-party tool.
 - Reported pitfall (FSUIPC forum, February 2025): Fenix LVars stuck at 0 under 2024, caused by a crash of the FSUIPC WASM module.
 

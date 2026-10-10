@@ -41,7 +41,7 @@ Today, these people have nothing. Plenty of excellent tools surround the pilot (
 
 | Step | Content |
 |---|---|
-| V1 | From the gate to the runway exit on an airliner that can autoland (Fenix A320 first, then Asobo's A320neo): taxi, take-off, managed flight, automatic ILS landing |
+| V1 | From the gate to the runway exit on MSFS 2024's default airliner, Asobo's A320neo (if it can autoland: to be checked): taxi, take-off, managed flight, automatic ILS landing. Add-on aircraft such as the Fenix A320 come later |
 | V2 | Automatic take-off and landing for general aviation aircraft without autoland |
 | V3 | Taxi to the arrival gate, following ATC clearances |
 | Later | Cold & dark start-up, flight plan programming, checklists, more aircraft |
@@ -136,7 +136,7 @@ Aujourd'hui, ils n'ont rien. D'excellents outils entourent le pilote (copilotes 
 
 | Étape | Contenu |
 |---|---|
-| V1 | Du parking à la sortie de piste sur un avion de ligne capable d'autoland (Fenix A320 d'abord, puis A320neo d'Asobo) : roulage, décollage, vol managé, atterrissage automatique ILS |
+| V1 | Du parking à la sortie de piste sur l'avion de ligne par défaut de MSFS 2024, l'A320neo d'Asobo (s'il sait faire l'autoland : à vérifier) : roulage, décollage, vol managé, atterrissage automatique ILS. Les avions add-ons comme le Fenix A320 viendront ensuite |
 | V2 | Décollage et atterrissage automatiques pour les avions légers sans autoland |
 | V3 | Roulage jusqu'à la place d'arrivée, en suivant les clairances de l'ATC |
 | Plus tard | Mise en route depuis « cold & dark », programmation du plan de vol, checklists, autres avions |

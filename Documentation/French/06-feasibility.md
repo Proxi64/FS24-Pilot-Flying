@@ -4,7 +4,9 @@
 
 **Principe :** on établit ce qui est possible avant d'écrire l'application. Chaque question se tranche par une lecture de documentation ou par un **petit essai** : une console jetable rangée dans `Experiments/`, hors du futur projet.
 
-Statuts : ✅ confirmé · 🟡 en partie · ❓ à vérifier · ❌ impossible ou abandonné.
+Statuts : ✅ confirmé · 🟡 en partie · ❓ à vérifier · ❌ impossible ou abandonné · ⏸ reporté.
+
+**Pas d'essais sur les add-ons pour l'instant** (décision du 10 octobre 2026) : l'étude continue avec les avions par défaut de MSFS 2024 (C172, A320neo d'Asobo). Les sections B et C, menées le 9 octobre 2026, sont conservées mais pas poursuivies.
 
 ## A. Commander l'avion depuis l'extérieur
 
@@ -15,7 +17,7 @@ Statuts : ✅ confirmé · 🟡 en partie · ❓ à vérifier · ❌ impossible 
 | A3 | Quelle fréquence de lecture et d'écriture atteint-on réellement, avec quelle irrégularité ? | Mesure pendant l'essai A1 | ✅ Essai A1 (09/10/2026), C172 à l'arrêt : lecture à chaque image du simulateur = 41 Hz sur ce PC (intervalle 25 ms, p95 26,4 ms, un trou de 81 ms en 20 s) ; envoi à 30 et 60 Hz tenu (p95 34,7 / 17,9 ms) ; gaz et freins répondent à l'image suivante (≤ 10 ms), les gouvernes avec environ 20 ms de retard (sinusoïde) et se stabilisent en 0,1 s environ. La fréquence de lecture suit celle des images du simulateur |
 | A4 | Au sol, le palonnier oriente-t-il la roulette de nez ? Y a-t-il un tiller séparé ? | Essai au parking | ✅ C172 (essai A1, 09/10/2026) : la roulette de nez ne braque qu'en roulant (à l'arrêt son angle reste à 0). En roulant entre 3 et 5 kt, le palonnier **et** l'événement de tiller `AXIS_STEERING_SET` la braquent tous les deux, linéairement, 20° pour une commande complète, sans retard mesurable ; l'avion lacete environ 0,22 s plus tard. Une valeur positive tourne à gauche dans les deux cas (pour le tiller, l'inverse de la documentation). Angle lu par `GEAR CENTER STEER ANGLE` ou `GEAR STEER ANGLE:0` ; `CONTACT POINT STEER ANGLE:0` reste à 0. Avions de ligne : voir B2 |
 
-## B. Fenix A320
+## B. Fenix A320 (add-on) — ⏸ reporté
 
 | # | Question | Comment vérifier | Statut |
 |---|---|---|---|
@@ -23,11 +25,11 @@ Statuts : ✅ confirmé · 🟡 en partie · ❓ à vérifier · ❌ impossible 
 | B2 | Quelle commande pour le tiller ? | HubHop + essai | ✅ Essai B1 : `AXIS_STEERING_SET` (±0,5 donne ±37) et l'écriture directe de la LVar `N_FC_CAPT_TILLER` (plage ±75) font tous deux bouger le tiller du Fenix ; le palonnier aussi |
 | B3 | Les commandes du FCU (vitesse, cap, altitude, VS, AP1/2, A/THR, APPR, LOC), des volets, du train, des spoilers et de l'autobrake existent-elles dans HubHop et fonctionnent-elles sous 2024 ? | HubHop + essai par le module WASM MobiFlight | 🟡 Essai B1, SimConnect natif uniquement (sans module WASM) : les boutons SPD / HDG / ALT du FCU suivent exactement (encodeurs `E_FCU_…`, +1 kt / +1° / +1000 ft par cran, en 0,1 s environ), aussi par les input events du FCU ; AP1 engagé et désengagé au sol (compteur `S_FCU_AP1`, voyant `I_FCU_AP1`) ; levier de volets (`S_FC_FLAPS` 1 donne `FLAPS HANDLE INDEX` 2 ; peut-être la configuration 1+F au sol, non vérifié) ; interrupteur beacon (`S_OH_EXT_LT_BEACON`, feu en 36 à 58 ms). Les appuis sur A/THR, LOC, APPR et autobrake sont enregistrés mais n'allument rien au sol moteurs coupés, ce qui est le comportement normal de l'avion (pareil à la main) : à confirmer en vol. Train et spoilers : pas essayés |
 | B4 | Peut-on lire l'état : modes FMA, phase du FMS, alarmes ? | HubHop, liste des LVars, essai | 🟡 Essai B1 : voyants (`I_…`), fenêtres du FCU (`N_FCU_SPEED/HEADING/ALTITUDE/VS`), tirets (`B_FCU_…`), leviers et interrupteurs (`S_…`) sont des LVars lisibles, mises à jour en 0,1 s environ. Modes FMA, phase du FMS et alarmes ECAM : pas encore trouvés (absents des presets HubHop examinés) |
-| B5 | L'autoland complet (arrondi, roulement, freinage automatique) fonctionne-t-il sur ILS quand c'est notre programme qui l'arme ? | Vol d'essai manuel, puis piloté | ❓ |
-| B6 | Que fournit `Fenix.GqlGateway` ? Les conditions d'utilisation de Fenix autorisent-elles un outil tiers ? | Exploration + lecture des CGU, voire demande à Fenix | ❓ |
-| B7 | Plan de vol dans le MCDU : en V1, on suppose que le joueur le charge (import SimBrief de l'EFB Fenix). Automatisable plus tard ? | Plus tard | ❓ |
+| B5 | L'autoland complet (arrondi, roulement, freinage automatique) fonctionne-t-il sur ILS quand c'est notre programme qui l'arme ? | Vol d'essai manuel, puis piloté | ⏸ (d'abord sur l'A320neo par défaut : F3) |
+| B6 | Que fournit `Fenix.GqlGateway` ? Les conditions d'utilisation de Fenix autorisent-elles un outil tiers ? | Exploration + lecture des CGU, voire demande à Fenix | ⏸ |
+| B7 | Plan de vol dans le MCDU : en V1, on suppose que le joueur le charge (import SimBrief de l'EFB Fenix). Automatisable plus tard ? | Plus tard | ⏸ |
 
-## C. Accès aux variables des avions tiers
+## C. Accès aux variables des avions tiers — ⏸ reporté
 
 | # | Question | Comment vérifier | Statut |
 |---|---|---|---|
@@ -45,7 +47,7 @@ Statuts : ✅ confirmé · 🟡 en partie · ❓ à vérifier · ❌ impossible 
 | D3 | Que signifient les types de tronçons ? | Doc SDK 2024 | ✅ 1 TAXI, 2 RUNWAY, 3 PARKING, 4 PATH, 5 CLOSED, 6 VEHICLE, 7 ROAD, 8 PAINTEDLINE. Les scènes ne s'en servent pas de la même façon : LFBP (France VFR) surtout TAXI, LFPG (Asobo) presque uniquement PATH (4 667 PATH contre 3 TAXI) : les deux types doivent être traités comme des voies de circulation |
 | D4 | L'axe des voies du plan coïncide-t-il avec la ligne peinte de la scène (scène de base et payware) ? | Rouler à la main et comparer la position de l'avion au graphe | ✅ LFBP, scène France VFR (essai D4, 09/10/2026, C172 roulé à la main pendant 8 min, 8 700 positions utilisables sur des parties droites) : écart à l'axe du plan médiane +0,11 m, 90 % à moins de 0,50 m, au plus 1,05 m ; par voie entre −0,16 m (N) et +0,33 m (M). Le plan coïncide avec la peinture à la précision d'un pilote. **Les positions doivent être converties avec les échelles WGS84** : avec une sphère de 111 320 m par degré, les mêmes données montraient jusqu'à 1,5 m de faux écart à 1 km environ du point de référence (vu à l'essai E1, confirmé avec la carte au sol de GSX). Scène par défaut non essayée |
 | D5 | Peut-on connaître la position des autres avions au sol (trafic IA, BeyondATC) pour s'arrêter derrière eux ? | `SimConnect_RequestDataOnSimObjectType` | ❓ |
-| D6 | Peut-on récupérer la clairance de roulage de BeyondATC ? | Étude d'un outil existant autour de BeyondATC | ❓ |
+| D6 | Peut-on récupérer la clairance de roulage de BeyondATC ? | Étude d'un outil existant autour de BeyondATC | ⏸ (BeyondATC est un add-on) |
 
 ## E. Boucles de pilotage
 
@@ -56,14 +58,25 @@ Statuts : ✅ confirmé · 🟡 en partie · ❓ à vérifier · ❌ impossible 
 | E3 | Faut-il un module WASM pour la latence ? | Découle de A3, E1, E2 | 🟡 Pas pour le roulage : l'essai E1 a roulé tout un itinéraire depuis l'application (commandes à 30 Hz, positions à environ 40 Hz). Décollage et arrondi (E2) restent à mesurer (indice favorable : Pomax décolle et atterrit des avions légers depuis l'extérieur, sous MSFS 2020) |
 | E4 | Sous quelle licence est le code du tutoriel de Pomax ? | Lecture du dépôt | ❓ |
 
+## F. Avion de ligne par défaut : A320neo d'Asobo (MSFS 2024)
+
+Les questions « avion de ligne » de la section B, posées à nouveau sur l'A320neo du simulateur (sans add-on).
+
+| # | Question | Comment vérifier | Statut |
+|---|---|---|---|
+| F1 | L'A320neo accepte-t-il les axes standard (mini-manche, palonnier, freins, manettes) et le tiller, et où est le ralenti ? | Essai A1 sur l'A320neo | ❓ |
+| F2 | Peut-on commander le FCU (vitesse, cap, altitude, V/S, AP1/2, A/THR, LOC, APPR), les volets, le train, les spoilers et l'autobrake : événements standard, input events ou LVars ? | Liste des input events (comme dans l'essai C1) + essai | ❓ |
+| F3 | L'A320neo fait-il l'autoland (arrondi, roulement) sur ILS quand c'est notre programme qui l'arme ? | Vol d'essai manuel, puis piloté | ❓ |
+| F4 | Peut-on lire l'état : modes FMA, phase du vol, alarmes ? | SimVars, LVars, input events + essai | ❓ |
+
 ## Essais
 
 | Essai | Dossier | Questions | État |
 |---|---|---|---|
 | D2 — plan de roulage complet | `Experiments/D2-TaxiLayout/` | D1, D2, D3, convention des axes, connexité du réseau | Lancé dans MSFS à LFBP, scène payware France VFR du dossier Community (9 octobre 2026). Confirmé : types d'éléments 2 START et 17 TAXI_NAME, BIAS_X = est / BIAS_Z = nord (médiane 0,4 m contre 297 m ; 0,13 m avec la conversion WGS84 adoptée ensuite), réseau relié à toutes les places et à tous les points d'attente. Relancé à LFPG, scène Asobo par défaut (9 octobre 2026) : mêmes conclusions (axes : médiane 1,3 m contre 544 m ; réseau principal de 4 313 nœuds, 374 places toutes reliées). `WIDTH`, `CENTER_LINE` et `WEIGHT` sont bien transmis (LFPG : largeurs de 5 à 60 m, ligne peinte sur 3 252 tronçons, masse 500 000 lb) mais dépendent de la scène : LFBP donne 30 m, 0 et 0 partout. On ne peut pas s'y fier sans valeur de repli |
 | A1 — piloter l'avion depuis l'extérieur | `Experiments/A1-AxisControl/` | A1, A2, A3, A4 (Cessna 172 au parking, moteur coupé) | Lancé dans MSFS le 9 octobre 2026 (C172 d'Asobo au parking, moteur coupé) : aucune exception SimConnect ; résultats dans les lignes A1 à A4. Second script `--rolling` lancé le même jour (70 m sur une voie de circulation, sans arrêt d'urgence) : règle A4. Vu aussi : `PARKING_BRAKE_SET` fonctionne dans les deux sens ; au ralenti le C172 roule déjà à 5,7 kt, donc tenir 4 kt demande les freins (utile pour E1) ; freins à 50 % : arrêt depuis 3,5 kt en 1,4 s et 1,4 m |
-| C1 — module WASM MobiFlight | `Experiments/C1-MobiFlight/` | C1, C4 (+ liste des LVars pour B1 à B4), et ce que SimConnect fait nativement sans le module : LVars et input events (variables B:) | Lancé sur le C172 le 9 octobre 2026 (résultats dans les lignes C1 et C4). Vu aussi : `K:TOGGLE_BEACON_LIGHTS` (envoyé sous la forme `0 (>K:TOGGLE_BEACON_LIGHTS)` par le module) n'a marché qu'une fois sur quatre sur le C172 2024, alors que l'input event `LIGHTING_BEACON_1` a marché à chaque fois, avec son écho. Cause inconnue (le paramètre 0 ? le module ?) : un seul cas, pas une règle générale ; à réessayer avec un événement envoyé directement par SimConnect. Le C172 a 233 input events. Lancé sur le Fenix A320 le même jour (batteries et EXT PWR sur ON) : même comportement pour le module et les LVars natives ; `K:TOGGLE_BEACON_LIGHTS` n'a de nouveau marché que la première fois (le feu s'est allumé et l'est resté). Le Fenix expose 220 input events : 180 pour les boîtes audio, 18 pour les boutons du FCU (vitesse, cap, altitude, V/S et baro : tourner, pousser, tirer), le reste pour les boîtes radio et les instruments de secours ; aucun bouton de pilote automatique, feu ou interrupteur. Ses LVars sont donc à trouver ailleurs (B3, B4) |
-| B1 — commandes du Fenix | `Experiments/B1-FenixControls/` | B1 à B4 (Fenix au parking, sous tension, moteurs coupés ; SimConnect natif uniquement) | Lancé dans MSFS le 9 octobre 2026 (Fenix au parking, sous tension, moteurs coupés) : aucune exception SimConnect ; résultats dans les lignes B1 à B4. Le programme remet désormais les manettes en place par leurs LVars |
+| C1 — module WASM MobiFlight | `Experiments/C1-MobiFlight/` | C1, C4 (+ liste des LVars pour B1 à B4), et ce que SimConnect fait nativement sans le module : LVars et input events (variables B:) | Lancé sur le C172 le 9 octobre 2026 (résultats dans les lignes C1 et C4). Vu aussi : `K:TOGGLE_BEACON_LIGHTS` (envoyé sous la forme `0 (>K:TOGGLE_BEACON_LIGHTS)` par le module) n'a marché qu'une fois sur quatre sur le C172 2024, alors que l'input event `LIGHTING_BEACON_1` a marché à chaque fois, avec son écho. Cause inconnue (le paramètre 0 ? le module ?) : un seul cas, pas une règle générale ; à réessayer avec un événement envoyé directement par SimConnect. Le C172 a 233 input events. Lancé sur le Fenix A320 le même jour (batteries et EXT PWR sur ON) : même comportement pour le module et les LVars natives ; `K:TOGGLE_BEACON_LIGHTS` n'a de nouveau marché que la première fois (le feu s'est allumé et l'est resté). Le Fenix expose 220 input events : 180 pour les boîtes audio, 18 pour les boutons du FCU (vitesse, cap, altitude, V/S et baro : tourner, pousser, tirer), le reste pour les boîtes radio et les instruments de secours ; aucun bouton de pilote automatique, feu ou interrupteur. Ses LVars sont donc à trouver ailleurs (B3, B4). Suite reportée avec les essais sur add-ons (décision du 10/10/2026) ; la liste des input events servira pour l'A320neo par défaut (F2) |
+| B1 — commandes du Fenix | `Experiments/B1-FenixControls/` | B1 à B4 (Fenix au parking, sous tension, moteurs coupés ; SimConnect natif uniquement) | Lancé dans MSFS le 9 octobre 2026 (Fenix au parking, sous tension, moteurs coupés) : aucune exception SimConnect ; résultats dans les lignes B1 à B4. Le programme remet désormais les manettes en place par leurs LVars. Suite reportée : pas d'essais sur les add-ons pour l'instant (décision du 10/10/2026) |
 | D4 — axes du plan et lignes peintes | `Experiments/D4-CentrelineMatch/` | D4 (C172 roulé à la main à LFBP) | Lancé dans MSFS le 9 octobre 2026 ; analyse rejouée avec les échelles WGS84 : résultats dans la ligne D4 |
 | E1 — premier roulage automatique | `Experiments/E1-GroundTracking/` | E1 (C172 sur une voie droite de LFBP, 5 kt, jusqu'à 150 m ; mode itinéraire : d'une place au point d'attente en suivant une clairance) | Passages 1 et 2 dans MSFS le 9 octobre 2026 (conversion sphérique, corrigée depuis en WGS84 ; capture adoucie après le passage 1) et passage 3 (WGS84) ; passage en itinéraire de la place 8A au point d'attente de la piste 31 : résultats dans la ligne E1 |
 
@@ -82,10 +95,11 @@ Il lit le plan complet d'un aérodrome, avec tous les champs utiles au roulage (
 
 1. ✅ **D2** dans le simulateur (lecture seule, sans risque).
 2. ✅ **A1 à A4** sur un avion d'Asobo : une console qui lit l'état et envoie des axes (A1 et A2 à compléter en vol).
-3. ✅ **C1**, puis 🟡 **B1 à B4** sur le Fenix (à confirmer en vol : mini-manche, FMA).
+3. ✅ **C1**, puis 🟡 **B1 à B4** sur le Fenix (9 octobre 2026 ; pas poursuivi : pas d'essais sur les add-ons pour l'instant, décision du 10 octobre 2026).
 4. ✅ **D4 + E1** : roulage automatique à Pau, en ligne droite, puis tout un itinéraire de la place au point d'attente (C172).
-5. **Suite proposée** : le même itinéraire avec le Fenix A320 (train principal en virage, régulation de vitesse d'un jet).
-6. **B5, E2** : autoland et décollage.
-7. Encore ouverts : D5 (autres avions au sol), D6 (clairance BeyondATC), B6 (conditions d'utilisation du Fenix), E4 (licence de Pomax).
+5. **Suite proposée** : **F1** (commandes de l'A320neo par défaut), puis **E1 avec l'A320neo** sur le même itinéraire (rouler un jet : train principal en virage, régulation de vitesse).
+6. **F2 à F4**, puis **F3 + E2** : autoland et décollage sur l'A320neo.
+7. Encore ouverts : D5 (autres avions au sol : trafic IA du simulateur), E4 (licence de Pomax).
+8. ⏸ Reportés avec les essais sur add-ons : B5 à B7, C2 et C3, D6 (BeyondATC).
 
 À l'issue : fixer le périmètre de la V1 et l'architecture.

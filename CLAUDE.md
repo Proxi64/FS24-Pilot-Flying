@@ -10,7 +10,8 @@ Microsoft Flight Simulator 2024: taxi, take-off, flight, landing. It fills the g
 MSFS 2020, which no longer exists in MSFS 2024 and is especially missed by simmers with disabilities.
 
 **Current phase: feasibility study.** No application code yet. We first establish what is possible, through
-documentation reading and small throw-away experiments.
+documentation reading and small throw-away experiments. **No tests on add-ons for now** (Fenix, PMDG…, add-on
+ATC): tests use the default MSFS 2024 aircraft and features only (decision of 10/10/2026).
 
 Read first, in this order:
 1. `README.md` (overview)
@@ -29,7 +30,7 @@ Read first, in this order:
 
 ### Documentation
 - Feasibility questions are identified (A1, B3, D2…) in `06-feasibility.md`; update their status
-  (✅ confirmed · 🟡 partly · ❓ to be checked · ❌ impossible or dropped) when a test or a reading settles them.
+  (✅ confirmed · 🟡 partly · ❓ to be checked · ❌ impossible or dropped · ⏸ postponed) when a test or a reading settles them.
 - Every decision goes into `decision-log.md` (both languages), with its date (day/month/year) and its reason.
   Proposals stay under "Proposals awaiting validation" until the maintainer validates them.
 - Facts about MSFS or the SDK must be checked against the **official MSFS 2024 SDK documentation**
@@ -113,5 +114,5 @@ before relying on it. Do not add a fact without a source.
 - [old] `SimConnect_FlightPlanLoad` has no effect in MSFS 2024; a hand-written flight plan inside a `.FLT` file
   crashed MSFS. `PLANE TOUCHDOWN *` SimVars give the exact touchdown even when read at 1 Hz. SimConnect weather
   functions are deprecated in MSFS 2024 (they are still declared in the 2024 header).
-- Third-party aircraft access: proposed (not decided) through the MobiFlight WASM module and HubHop; tests C1 and B1
-  show native SimConnect may be enough for LVars and input events; FSUIPC only as an option.
+- Third-party aircraft access: proposed (not decided) through native SimConnect first, the MobiFlight WASM module and
+  HubHop if needed; postponed with the add-on tests (decision of 10/10/2026).

@@ -6,12 +6,12 @@ Un pilote virtuel doit remplacer **les mains, les yeux et le jugement** du pilot
 
 ## 1. Un vol, ce sont six problèmes
 
-| Phase | Ce que l'avion sait déjà faire | Difficulté | Cas du Fenix A320 |
+| Phase | Ce que l'avion sait déjà faire | Difficulté | Cas de l'avion de ligne (A320) |
 |---|---|---|---|
 | Montée, croisière, descente | Pilote automatique (PA) | Faible | Vol managé par le FMS |
 | Début de descente | Rien sur la plupart des avions légers | Moyenne | Calculé par le FMS |
 | Approche | Mode APPR / ILS si l'avion l'a | Moyenne | APPR + deux PA |
-| Atterrissage (arrondi, toucher) | Pas d'autoland sur l'immense majorité des avions | **Élevée** | **Autoland ILS** : arrondi et roulement faits par l'avion |
+| Atterrissage (arrondi, toucher) | Pas d'autoland sur l'immense majorité des avions | **Élevée** | **Autoland ILS** : arrondi et roulement faits par l'avion (Fenix ; à vérifier sur l'A320neo par défaut, question F3) |
 | Décollage | Rien : tenue d'axe, rotation | Moyenne à élevée | Pas de décollage automatique sur Airbus : à faire jusqu'à l'engagement du PA (vers 100 ft) |
 | Roulage | Rien | Moyenne grâce aux plans d'aérodromes (voir [04](04-airports-and-taxiing.md)) | Commande de direction (tiller), freins |
 
